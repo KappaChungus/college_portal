@@ -1,0 +1,20 @@
+Rails.application.routes.draw do
+  devise_for :users, skip: [:registrations]
+  
+  authenticated :user, ->(u) { u.teacher? } do
+    root to: "teacher_dashboard#index", as: :teacher_root
+  end
+
+  authenticated :user, ->(u) { u.student? } do
+    root to: "student_dashboard#index", as: :student_root
+  end
+
+  get "teacher_dashboard/index"
+  get "student_dashboard/index"
+
+  devise_scope :user do
+    unauthenticated do
+      root to: "devise/sessions#new", as: :unauthenticated_root
+    end
+  end
+end

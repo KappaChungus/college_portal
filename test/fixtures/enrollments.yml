@@ -1,0 +1,9 @@
+math_enrollment:
+  user_id: <%= ActiveRecord::FixtureSet.identify(:student) %>
+  course_id: <%= ActiveRecord::FixtureSet.identify(:math_course) %>
+  grade: A
+
+history_enrollment:
+  user_id: <%= ActiveRecord::FixtureSet.identify(:student) %>
+  course_id: <%= ActiveRecord::FixtureSet.identify(:history_course) %>
+  grade: B

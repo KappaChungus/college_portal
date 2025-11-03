@@ -1,0 +1,9 @@
+math_course:
+  title: Mathematics 101
+  code: MATH101
+  teacher_id: <%= ActiveRecord::FixtureSet.identify(:teacher) %>
+
+history_course:
+  title: History 101
+  code: HIST101
+  teacher_id: <%= ActiveRecord::FixtureSet.identify(:teacher) %>
