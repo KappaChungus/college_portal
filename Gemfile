@@ -67,3 +67,7 @@ end
 
 
 gem "devise"
+
+group :production, :ci do
+  gem "pg", "~> 1.5"
+end
