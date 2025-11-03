@@ -37,4 +37,3 @@ Course.all.each do |course|
     Enrollment.create!(student: student, course: course)
   end
 end
-
