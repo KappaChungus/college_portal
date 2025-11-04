@@ -17,4 +17,10 @@ Rails.application.routes.draw do
       root to: "devise/sessions#new", as: :unauthenticated_root
     end
   end
+
+  get "dashboard", to: "student_dashboard#index"
+  get "study_progress", to: "student_dashboard#study_progress"
+  get "schedule", to: "student_dashboard#schedule"
+  get "petitions", to: "student_dashboard#petitions"
+  get "surveys", to: "student_dashboard#surveys"
 end

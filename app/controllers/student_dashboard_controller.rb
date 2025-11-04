@@ -2,9 +2,13 @@ class StudentDashboardController < ApplicationController
   before_action :authenticate_user!
   before_action :require_student
 
+  layout "student"
   def index
   end
-
+  def study_progress; end
+  def schedule; end
+  def applications; end
+  def surveys; end
   private
 
   def require_student

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Student Panel</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white shadow-md p-4">
+        <div class="mb-6">
+          <h1 class="text-lg font-bold">PJATK Portal</h1>
+        </div>
+        <nav class="space-y-2">
+          <%= link_to "Dashboard", dashboard_path, class: "block py-2 px-3 rounded hover:bg-gray-100" %>
+          <%= link_to "Study Progress", study_progress_path, class: "block py-2 px-3 rounded hover:bg-gray-100" %>
+          <%= link_to "Schedule", schedule_path, class: "block py-2 px-3 rounded hover:bg-gray-100" %>
+          <%= link_to "Petitions", petitions_path, class: "block py-2 px-3 rounded hover:bg-gray-100" %>
+          <%= link_to "Surveys", surveys_path, class: "block py-2 px-3 rounded hover:bg-gray-100" %>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>
