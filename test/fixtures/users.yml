@@ -2,10 +2,10 @@ teacher:
   name: Alice
   email: teacher@example.com
   encrypted_password: <%= Devise::Encryptor.digest(User, "password") %>
-  role: teacher
+  type: "Teacher"
 
 student:
   name: Bob
   email: student@example.com
   encrypted_password: <%= Devise::Encryptor.digest(User, "password") %>
-  role: student
+  type: "Student"

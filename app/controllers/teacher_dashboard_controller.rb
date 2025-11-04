@@ -8,6 +8,6 @@ class TeacherDashboardController < ApplicationController
   private
 
   def require_teacher
-    redirect_to unauthenticated_root_path, alert: "Access denied." unless current_user.teacher?
+    redirect_to unauthenticated_root_path, alert: "Access denied." unless current_user.is_a?(Teacher)
   end
 end

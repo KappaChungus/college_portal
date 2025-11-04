@@ -12,6 +12,6 @@ class StudentDashboardController < ApplicationController
   private
 
   def require_student
-    redirect_to unauthenticated_root_path, alert: "Access denied." unless current_user.student?
+    redirect_to unauthenticated_root_path, alert: "Access denied." unless current_user.is_a?(Student)
   end
 end
