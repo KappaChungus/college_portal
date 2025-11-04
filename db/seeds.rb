@@ -1,39 +1,87 @@
-puts "Seeding the database..."
-
-# Clean existing data (optional during dev)
-User.destroy_all
-Course.destroy_all
+StudentCourse.destroy_all
 Enrollment.destroy_all
-teachers = [
-  { name: "Alice Johnson", email: "alice@uni.edu", role: "teacher", password: "password" },
-  { name: "Bob Smith", email: "bob@uni.edu", role: "teacher", password: "password" }
-]
+CourseTeacher.destroy_all
+Course.destroy_all
+User.destroy_all
+Group.destroy_all
 
-teachers.each do |teacher_data|
-  User.create!(teacher_data)
+puts "Creating Groups..."
+groups = []
+5.times do |i|
+  groups << Group.create!(name: "Group #{i + 1}")
 end
 
-students = [
-  { name: "Charlie Brown", email: "charlie@student.edu", role: "student", password: "password" },
-  { name: "Diana Prince", email: "diana@student.edu", role: "student", password: "password" },
-  { name: "Ethan Hunt", email: "ethan@student.edu", role: "student", password: "password" }
-]
-
-students.each do |student_data|
-  User.create!(student_data)
+puts "Creating Teachers..."
+teachers = []
+3.times do |i|
+  teachers << User.create!(
+    name: "Teacher #{i + 1}",
+    email: "teacher#{i + 1}@example.com",
+    password: "password",
+    type: "Teacher",
+    group: groups.sample
+  )
 end
 
-courses = [
-  { title: "Intro to Computer Science", code: "CS101", teacher: User.find_by(email: "alice@uni.edu") },
-  { title: "Advanced Mathematics", code: "MATH201", teacher: User.find_by(email: "bob@uni.edu") }
-]
-courses.each do |course_data|
-  Course.create!(course_data)
+puts "Creating Students..."
+students = []
+20.times do |i|
+  students << User.create!(
+    name: "Student #{i + 1}",
+    email: "student#{i + 1}@example.com",
+    password: "password",
+    type: "Student",
+    group: groups.sample
+  )
 end
 
+puts "Creating Courses..."
+courses = []
+10.times do |i|
+  courses << Course.create!(
+    code: "CSE#{100 + i}",
+    title: "Course #{i + 1}",
+    group: groups.sample,
+    teacher: teachers.sample
+  )
+end
 
-Course.all.each do |course|
-  User.where(role: 'student').sample(2).each do |student|
-    Enrollment.create!(student: student, course: course)
+puts "Assigning Teachers to Courses..."
+courses.each do |course|
+  # Randomly assign 1-2 teachers per course
+  teachers.sample(rand(1..2)).each do |teacher|
+    CourseTeacher.create!(course: course, teacher: teacher)
   end
 end
+
+puts "Enrolling Students..."
+students.each do |student|
+  courses.sample(3).each do |course|
+    Enrollment.create!(
+      student: student,  # fixed from user: to student:
+      course: course,
+      grade: ["A", "B", "C", "D", "F"].sample
+    )
+  end
+end
+
+puts "Creating StudentCourses..."
+students.each do |student|
+  courses.sample(2).each do |course|
+    StudentCourse.create!(
+      student: student,
+      course: course,
+      teacher: teachers.sample,
+      grades: [
+        { assignment: "Midterm", score: rand(50..100) },
+        { assignment: "Final", score: rand(50..100) }
+      ],
+      final_grade: rand(50..100),
+      status: ["current", "passed", "failed"].sample,  # fixed allowed values
+      retaken: [true, false].sample,
+      group_code: student.group.name
+    )
+  end
+end
+
+puts "Seeding completed!"

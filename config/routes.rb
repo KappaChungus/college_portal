@@ -1,11 +1,11 @@
 Rails.application.routes.draw do
   devise_for :users, skip: [ :registrations ]
 
-  authenticated :user, ->(u) { u.teacher? } do
+  authenticated :user, ->(u) { u.is_a?(Teacher) } do
     root to: "teacher_dashboard#index", as: :teacher_root
   end
 
-  authenticated :user, ->(u) { u.student? } do
+  authenticated :user, ->(u) { u.is_a?(Student) } do
     root to: "student_dashboard#index", as: :student_root
   end
 
