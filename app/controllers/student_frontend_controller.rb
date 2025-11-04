@@ -5,7 +5,7 @@ class StudentFrontendController < ApplicationController
   layout "student"
   def index
   end
-  
+
   def study_progress; end
   def schedule; end
   def applications; end

@@ -11,10 +11,10 @@ module Api
 
       render json: student_courses.as_json(
         include: {
-          course: { only: [:id, :code, :title] },
-          teacher: { only: [:id, :name, :email] }
+          course: { only: [ :id, :code, :title ] },
+          teacher: { only: [ :id, :name, :email ] }
         },
-        only: [:id, :final_grade, :grades, :status, :retaken, :group_code]
+        only: [ :id, :final_grade, :grades, :status, :retaken, :group_code ]
       )
     end
 

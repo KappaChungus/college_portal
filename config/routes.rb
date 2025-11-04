@@ -6,14 +6,13 @@ Rails.application.routes.draw do
   end
 
   authenticated :user, ->(u) { u.is_a?(Student) } do
-    #front
+    # front
     root to: "student_frontend#index", as: :student_root
     get "dashboard", to: "student_frontend#index"
     get "study_progress", to: "student_frontend#study_progress"
     get "schedule", to: "student_frontend#schedule"
     get "petitions", to: "student_frontend#petitions"
     get "surveys", to: "student_frontend#surveys"
-
   end
 
   get "teacher_frontend/index"
@@ -28,7 +27,4 @@ Rails.application.routes.draw do
   namespace :api do
     get "student/courses", to: "student_api#courses"
   end
-
-
-  
 end
