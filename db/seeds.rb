@@ -60,7 +60,7 @@ students.each do |student|
     Enrollment.create!(
       student: student,  # fixed from user: to student:
       course: course,
-      grade: ["A", "B", "C", "D", "F"].sample
+      grade: [ "A", "B", "C", "D", "F" ].sample
     )
   end
 end
@@ -77,8 +77,8 @@ students.each do |student|
         { assignment: "Final", score: rand(50..100) }
       ],
       final_grade: rand(50..100),
-      status: ["current", "passed", "failed"].sample,  # fixed allowed values
-      retaken: [true, false].sample,
+      status: [ "current", "passed", "failed" ].sample,  # fixed allowed values
+      retaken: [ true, false ].sample,
       group_code: student.group.name
     )
   end
