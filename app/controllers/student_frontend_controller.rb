@@ -1,10 +1,11 @@
-class StudentDashboardController < ApplicationController
+class StudentFrontendController < ApplicationController
   before_action :authenticate_user!
   before_action :require_student
 
   layout "student"
   def index
   end
+  
   def study_progress; end
   def schedule; end
   def applications; end
