@@ -18,10 +18,36 @@ module Api
       )
     end
 
+    def groups
+      student = current_user.becomes(Student)
+      groups = student.groups.distinct
+
+      render json: groups.as_json(only: [ :id, :name ])
+    end
+
+    # (moved to SurveysApiController)
+
+    # GET /api/student/profile
+    def profile
+      student = current_user.becomes(Student)
+      profile = student.student_profile
+
+      if profile
+        render json: profile.as_json(only: [ :id, :study_name, :study_year, :semester, :specialization_field ])
+      else
+        render json: {}, status: :not_found
+      end
+    end
+
+
     private
 
     def require_student
       render json: { error: "Access denied" }, status: :forbidden unless current_user.is_a?(Student)
+    end
+
+    def student_profile_params
+      params.require(:student_profile).permit(:study_name, :study_year, :semester, :specialization_field)
     end
   end
 end

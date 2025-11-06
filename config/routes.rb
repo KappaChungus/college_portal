@@ -26,5 +26,18 @@ Rails.application.routes.draw do
 
   namespace :api do
     get "student/courses", to: "student_api#courses"
+    get "student/groups", to: "student_api#groups"
+    get "student/current_teachers", to: "surveys_api#current_teachers"
+    get "student/teachers/:teacher_id/rated", to: "surveys_api#teacher_rated"
+  post "student/surveys", to: "surveys_api#create"
+    get "student/profile", to: "student_api#profile"
+    put "student/profile", to: "student_api#update_profile"
+    patch "student/profile", to: "student_api#update_profile"
+    get "student/surveys", to: "surveys_api#index"
+    # Schedule (was class_sessions)
+    get "groups/:group_id/schedule", to: "schedules#index"
+    post "groups/:group_id/schedule", to: "schedules#create"
+    get "student/schedule", to: "schedules#student_schedule"
+    resources :schedules, only: [ :update, :destroy ]
   end
 end

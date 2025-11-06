@@ -1,6 +1,6 @@
 require "test_helper"
 
-class StudentDashboardControllerTest < ActionDispatch::IntegrationTest
+class StudentFrontendControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
@@ -14,8 +14,8 @@ class StudentDashboardControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-   test "student should NOT access teacher dashboard" do
-    get teacher_dashboard_index_path  # <- direct to controller, not root
+  test "student should NOT access teacher dashboard" do
+    get teacher_frontend_index_path
     assert_redirected_to unauthenticated_root_path
   end
 end
