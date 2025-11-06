@@ -1,0 +1,6 @@
+<h1>New petition submitted</h1>
+<p><strong>Topic:</strong> <%= @petition.topic %></p>
+<p><strong>Student:</strong> <%= @student.name %> (&lt;<%= @student.email %>&gt;)</p>
+<p><strong>Submitted at:</strong> <%= @petition.created_at %></p>
+<h3>Content</h3>
+<p><%= simple_format(@petition.petition_content) %></p>

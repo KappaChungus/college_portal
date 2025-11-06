@@ -25,21 +25,33 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
-    get "student/courses", to: "student_api#courses"
-    get "student/groups", to: "student_api#groups"
-    get "student/current_teachers", to: "surveys_api#current_teachers"
-    get "student/teachers/:teacher_id/rated", to: "surveys_api#teacher_rated"
-    post "student/surveys", to: "surveys_api#create"
-    get "student/petitions", to: "petitions_api#my_petitions"
-    post "student/petitions", to: "petitions_api#create"
-    get "student/profile", to: "student_api#profile"
-    put "student/profile", to: "student_api#update_profile"
-    patch "student/profile", to: "student_api#update_profile"
-    get "student/surveys", to: "surveys_api#index"
+    namespace :student do
+      get "courses", to: "student_api#courses"
+      get "groups", to: "student_api#groups"
+      get "current_teachers", to: "surveys_api#current_teachers"
+      get "teachers/:teacher_id/rated", to: "surveys_api#teacher_rated"
+      post "surveys", to: "surveys_api#create"
+      get "surveys", to: "surveys_api#index"
+
+      get "petitions", to: "petitions_api#my_petitions"
+      post "petitions", to: "petitions_api#create"
+
+      get "profile", to: "student_api#profile"
+      put "profile", to: "student_api#update_profile"
+      patch "profile", to: "student_api#update_profile"
+
+      get "schedule", to: "schedules#index"
+    end
+
+    namespace :teacher do
+      get "surveys", to: "surveys#index"
+      get "schedule", to: "schedules#index"
+    end
+
     # Schedule (was class_sessions)
     get "groups/:group_id/schedule", to: "schedules#index"
     post "groups/:group_id/schedule", to: "schedules#create"
-    get "student/schedule", to: "schedules#student_schedule"
+
     resources :schedules, only: [ :update, :destroy ]
   end
 end
