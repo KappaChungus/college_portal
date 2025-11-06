@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_06_163500) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_06_172500) do
   create_table "course_teachers", force: :cascade do |t|
     t.integer "course_id", null: false
     t.datetime "created_at", null: false
@@ -34,6 +34,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_06_163500) do
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "petitions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "petition_content", null: false
+    t.string "status", default: "pending", null: false
+    t.integer "student_id", null: false
+    t.string "topic", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_id"], name: "index_petitions_on_student_id"
   end
 
   create_table "schedules", force: :cascade do |t|
@@ -120,6 +130,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_06_163500) do
   add_foreign_key "course_teachers", "courses"
   add_foreign_key "course_teachers", "users", column: "teacher_id"
   add_foreign_key "courses", "groups"
+  add_foreign_key "petitions", "users", column: "student_id"
   add_foreign_key "schedules", "courses"
   add_foreign_key "schedules", "groups"
   add_foreign_key "schedules", "users", column: "teacher_id"
