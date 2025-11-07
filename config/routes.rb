@@ -46,6 +46,13 @@ Rails.application.routes.draw do
     namespace :teacher do
       get "surveys", to: "surveys#index"
       get "schedule", to: "schedules#index"
+      resources :manage_courses, path: "courses", only: [ :index, :show ] do
+        member do
+          get "students"
+          post "student/:student_id/mark", to: "manage_courses#mark"
+          get "student/:student_id/marks", to: "manage_courses#marks"
+        end
+      end
     end
 
     # Schedule (was class_sessions)
