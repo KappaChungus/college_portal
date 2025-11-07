@@ -5,7 +5,7 @@ module Api
       # GET /api/student/courses
 
       def courses
-  student_courses = current_user.becomes(::Student)
+        student_courses = current_user.becomes(::Student)
                                       .student_courses
                                       .includes(:course, :teacher)
 
@@ -18,18 +18,17 @@ module Api
         )
       end
 
+      # GET /api/student/profile/groups
       def groups
-  student = current_user.becomes(::Student)
+        student = current_user.becomes(::Student)
         groups = student.groups.distinct
 
         render json: groups.as_json(only: [ :id, :name ])
       end
 
-      # (moved to SurveysApiController)
-
       # GET /api/student/profile
       def profile
-  student = current_user.becomes(::Student)
+        student = current_user.becomes(::Student)
         profile = student.student_profile
 
         if profile
