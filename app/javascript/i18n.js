@@ -1,0 +1,215 @@
+// Simple i18n system for College Portal
+class I18n {
+  constructor() {
+    this.currentLang = localStorage.getItem('language') || 'en';
+    this.translations = {
+      en: {
+        // Navigation
+        dashboard: 'Dashboard',
+        study_progress: 'Study Progress',
+        schedule: 'Schedule',
+        petitions: 'Petitions',
+        surveys: 'Surveys',
+        
+        // Common actions
+        loading: 'Loading...',
+        submit: 'Submit',
+        cancel: 'Cancel',
+        save: 'Save',
+        edit: 'Edit',
+        delete: 'Delete',
+        close: 'Close',
+        back: 'Back',
+        
+        // Header
+        profile: 'Profile',
+        logout: 'Log Out',
+        hello: 'Hello',
+        
+        // Study Progress page
+        study_progress_title: 'Study Progress',
+        student_profile_label: 'Student Profile',
+        study_name_label: 'Study Name',
+        study_year_label: 'Study Year',
+        semester_label: 'Semester',
+        specialization_label: 'Specialization',
+        my_groups: 'My Groups',
+        my_courses: 'My Courses',
+        code: 'Code',
+        course_title: 'Course Title',
+        teacher: 'Teacher',
+        status: 'Status',
+        final_grade: 'Final Grade',
+        no_groups: 'No groups assigned',
+        no_courses: 'No courses enrolled',
+        load_error: 'Error loading data',
+        
+        // Petitions page
+        my_petitions: 'My Petitions',
+        new_petition: 'New Petition',
+        back_to_petitions: 'Back to Petitions',
+        topic: 'Topic',
+        content: 'Content',
+        submit_petition: 'Submit Petition',
+        no_petitions: 'No petitions',
+        no_petitions_message: 'Get started by creating a new petition.',
+        loading_petitions: 'Loading petitions...',
+        loading_topics: 'Loading topics...',
+        select_topic: 'Select a topic...',
+        petition_placeholder: 'Describe your petition in detail...',
+        submitting: 'Submitting...',
+        petition_success: 'Petition submitted successfully! Redirecting...',
+        required_fields: 'Please fill in all required fields',
+        submit_error: 'An error occurred while submitting your petition. Please try again.'
+      },
+      pl: {
+        // Navigation  
+        dashboard: 'Panel główny',
+        study_progress: 'Postęp studiów',
+        schedule: 'Plan zajęć',
+        petitions: 'Podania',
+        surveys: 'Ankiety',
+        
+        // Common actions
+        loading: 'Ładowanie...',
+        submit: 'Wyślij',
+        cancel: 'Anuluj',
+        save: 'Zapisz',
+        edit: 'Edytuj',
+        delete: 'Usuń',
+        close: 'Zamknij',
+        back: 'Powrót',
+        
+        // Header
+        profile: 'Profil',
+        logout: 'Wyloguj',
+        hello: 'Witaj',
+        
+        // Study Progress page
+        study_progress_title: 'Postęp studiów',
+        student_profile_label: 'Profil studenta',
+        study_name_label: 'Kierunek',
+        study_year_label: 'Rok studiów',
+        semester_label: 'Semestr',
+        specialization_label: 'Specjalizacja',
+        my_groups: 'Moje grupy',
+        my_courses: 'Moje kursy',
+        code: 'Kod',
+        course_title: 'Tytuł kursu',
+        teacher: 'Wykładowca',
+        status: 'Status',
+        final_grade: 'Ocena końcowa',
+        no_groups: 'Brak przypisanych grup',
+        no_courses: 'Brak zapisanych kursów',
+        load_error: 'Błąd wczytywania danych',
+        
+        // Petitions page
+        my_petitions: 'Moje podania',
+        new_petition: 'Nowe podanie',
+        back_to_petitions: 'Powrót do podań',
+        topic: 'Temat',
+        content: 'Treść',
+        submit_petition: 'Wyślij podanie',
+        no_petitions: 'Brak podań',
+        no_petitions_message: 'Zacznij od utworzenia nowego podania.',
+        loading_petitions: 'Ładowanie podań...',
+        loading_topics: 'Ładowanie tematów...',
+        select_topic: 'Wybierz temat...',
+        petition_placeholder: 'Opisz szczegółowo swoje podanie...',
+        submitting: 'Wysyłanie...',
+        petition_success: 'Podanie zostało wysłane pomyślnie! Przekierowanie...',
+        required_fields: 'Proszę wypełnić wszystkie wymagane pola',
+        submit_error: 'Wystąpił błąd podczas wysyłania podania. Spróbuj ponownie.'
+
+      }
+    };
+  }
+  
+  t(key) {
+    return this.translations[this.currentLang]?.[key] || this.translations.en[key] || key;
+  }
+  
+  setLanguage(lang) {
+    if (this.translations[lang]) {
+      this.currentLang = lang;
+      localStorage.setItem('language', lang);
+      this.updateUI();
+      
+      // Dispatch event for other components to listen
+      document.dispatchEvent(new CustomEvent('languageChanged', { 
+        detail: { language: lang } 
+      }));
+    }
+  }
+  
+  getCurrentLanguage() {
+    return this.currentLang;
+  }
+  
+  updateUI() {
+    // Update language indicator
+    const langIndicator = document.getElementById('current-language');
+    if (langIndicator) {
+      langIndicator.textContent = this.currentLang.toUpperCase();
+    }
+    
+    // Update all elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = this.t(key);
+      
+      if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+        const attr = element.getAttribute('data-i18n-attr') || 'placeholder';
+        element[attr] = translation;
+      } else {
+        // Preserve HTML content if has data-i18n-html
+        if (element.hasAttribute('data-i18n-html')) {
+          element.innerHTML = translation;
+        } else {
+          element.textContent = translation;
+        }
+      }
+    });
+  }
+  
+  init() {
+    this.updateUI();
+    
+    // Re-apply on Turbo navigation
+    document.addEventListener('turbo:load', () => {
+      this.updateUI();
+    });
+    
+    // Re-apply on Turbo render
+    document.addEventListener('turbo:render', () => {
+      this.updateUI();
+    });
+  }
+}
+
+// Create global instance immediately
+const i18n = new I18n();
+
+// Export for use in other scripts immediately (before DOMContentLoaded)
+window.i18n = i18n;
+
+// Global function for language change - define immediately
+window.changeLanguage = function(lang) {
+  i18n.setLanguage(lang);
+  
+  // Close dropdown
+  const dropdown = document.getElementById('language-dropdown');
+  if (dropdown) {
+    dropdown.classList.add('hidden');
+  }
+};
+
+// Export translation function immediately
+window.t = (key) => i18n.t(key);
+
+// Initialize on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => i18n.init());
+} else {
+  i18n.init();
+}

@@ -45,10 +45,10 @@
               </button>
               <!-- Language Dropdown -->
               <div id="language-dropdown" class="hidden absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-                <button onclick="changeLanguage('en')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <button data-lang="en" class="language-option block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   🇬🇧 English
                 </button>
-                <button onclick="changeLanguage('pl')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <button data-lang="pl" class="language-option block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   🇵🇱 Polish
                 </button>
               </div>
@@ -60,7 +60,9 @@
                 <div class="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center">
                   <span class="text-white font-medium text-sm"><%= current_user.name.first.upcase if current_user.name.present? %></span>
                 </div>
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Hello, <%= current_user.name.split.first if current_user.name.present? %></span>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span data-i18n="hello">Hello</span>, <%= current_user.name.split.first if current_user.name.present? %>
+                </span>
                 <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
@@ -71,13 +73,13 @@
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                   </svg>
-                  Profile
+                  <span data-i18n="profile">Profile</span>
                 <% end %>
                 <%= button_to destroy_user_session_path, method: :delete, class: "flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors", form: { class: "w-full" } do %>
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                   </svg>
-                  Log Out
+                  <span data-i18n="logout">Log Out</span>
                 <% end %>
               </div>
             </div>
@@ -89,11 +91,21 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-white dark:bg-gray-800 shadow-md p-4 overflow-y-auto transition-colors">
           <nav class="space-y-2">
-            <%= link_to "Dashboard", dashboard_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" %>
-            <%= link_to "Study Progress", study_progress_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" %>
-            <%= link_to "Schedule", schedule_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" %>
-            <%= link_to "Petitions", petitions_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" %>
-            <%= link_to "Surveys", surveys_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" %>
+            <%= link_to dashboard_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
+              <span data-i18n="dashboard">Dashboard</span>
+            <% end %>
+            <%= link_to study_progress_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
+              <span data-i18n="study_progress">Study Progress</span>
+            <% end %>
+            <%= link_to schedule_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
+              <span data-i18n="schedule">Schedule</span>
+            <% end %>
+            <%= link_to petitions_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
+              <span data-i18n="petitions">Petitions</span>
+            <% end %>
+            <%= link_to surveys_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
+              <span data-i18n="surveys">Surveys</span>
+            <% end %>
           </nav>
         </aside>
 
@@ -189,22 +201,17 @@
           });
         }
 
-        // Make changeLanguage globally accessible
-        window.changeLanguage = function(lang) {
-          const currentLanguageEl = document.getElementById('current-language');
-          const languageDropdownEl = document.getElementById('language-dropdown');
-          if (lang === 'en') {
-            currentLanguageEl.textContent = 'EN';
-            localStorage.setItem('language', 'en');
-          } else if (lang === 'pl') {
-            currentLanguageEl.textContent = 'PL';
-            localStorage.setItem('language', 'pl');
+        // Language option click handlers - use event delegation
+        document.addEventListener('click', (e) => {
+          if (e.target.classList.contains('language-option')) {
+            const lang = e.target.getAttribute('data-lang');
+            if (lang && window.changeLanguage) {
+              window.changeLanguage(lang);
+            }
           }
-          languageDropdownEl?.classList.add('hidden');
-          console.log('Language changed to:', lang);
-        };
+        });
 
-        // Load saved language preference
+        // Load saved language preference (changeLanguage is defined in i18n.js)
         const savedLanguage = localStorage.getItem('language') || 'en';
         const currentLanguageEl = document.getElementById('current-language');
         if (currentLanguageEl) {
