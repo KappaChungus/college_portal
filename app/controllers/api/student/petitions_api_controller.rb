@@ -3,16 +3,24 @@ module Api
     class PetitionsApiController < BaseController
       # GET /api/student/petitions
       def my_petitions
-  student = current_user.becomes(::Student)
+        student = current_user.becomes(::Student)
 
         petitions = Petition.where(student_id: student.id).order(created_at: :desc)
 
         render json: petitions.as_json(only: [ :id, :topic, :petition_content, :status, :created_at, :updated_at ])
       end
 
+      # GET /api/student/topics
+      def topics
+        student = current_user.becomes(::Student)
+        topics = Petition::TOPICS
+
+        render json: topics
+      end
+
       # POST /api/student/petitions
       def create
-  student = current_user.becomes(::Student)
+        student = current_user.becomes(::Student)
 
         p_params = params.require(:petition).permit(:topic, :petition_content)
 

@@ -3,9 +3,9 @@ module Api
     class SchedulesController < BaseController
       # GET /api/student/schedule
       def index
-  unless current_user.is_a?(::Student)
+        unless current_user.is_a?(::Student)
           render json: { error: "Access denied" }, status: :forbidden and return
-  end
+        end
 
         group = current_user.group
         unless group

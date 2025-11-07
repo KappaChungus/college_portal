@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     get "study_progress", to: "student_frontend#study_progress"
     get "schedule", to: "student_frontend#schedule"
     get "petitions", to: "student_frontend#petitions"
+    get "petitions/new", to: "student_frontend#new_petition", as: :new_petition
     get "surveys", to: "student_frontend#surveys"
   end
 
@@ -41,11 +42,19 @@ Rails.application.routes.draw do
       patch "profile", to: "student_api#update_profile"
 
       get "schedule", to: "schedules#index"
+      get "topics", to: "petitions_api#topics"
     end
 
     namespace :teacher do
       get "surveys", to: "surveys#index"
       get "schedule", to: "schedules#index"
+      resources :manage_courses, path: "courses", only: [ :index, :show ] do
+        member do
+          get "students"
+          post "student/:student_id/mark", to: "manage_courses#mark"
+          get "student/:student_id/marks", to: "manage_courses#marks"
+        end
+      end
       resources :manage_courses, path: "courses", only: [ :index, :show ] do
         member do
           get "students"

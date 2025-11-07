@@ -8,7 +8,8 @@ class StudentFrontendController < ApplicationController
 
   def study_progress; end
   def schedule; end
-  def applications; end
+  def petitions; end
+  def new_petition; end
   def surveys; end
   private
 

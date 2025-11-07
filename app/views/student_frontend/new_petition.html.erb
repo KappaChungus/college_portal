@@ -1,0 +1,191 @@
+<div class="max-w-3xl mx-auto">
+  <div class="mb-6">
+    <%= link_to petitions_path, class: "inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100" do %>
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to Petitions
+    <% end %>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">New Petition</h1>
+
+    <!-- Loading spinner for topics -->
+    <div id="topics-loading" class="flex justify-center items-center py-8">
+      <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-3 text-gray-600 dark:text-gray-300">Loading topics...</span>
+    </div>
+
+    <form id="petition-form" class="space-y-6 hidden">
+      <div>
+        <label for="topic" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Topic <span class="text-red-500">*</span>
+        </label>
+        <select 
+          id="topic" 
+          name="topic" 
+          required
+          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors bg-white"
+        >
+          <option value="">Select a topic...</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="petition_content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Content <span class="text-red-500">*</span>
+        </label>
+        <textarea 
+          id="petition_content" 
+          name="petition_content" 
+          required
+          rows="8"
+          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none"
+          placeholder="Describe your petition in detail..."
+        ></textarea>
+      </div>
+
+      <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"></div>
+      
+      <div id="success-message" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+        Petition submitted successfully! Redirecting...
+      </div>
+
+      <div class="flex gap-4">
+        <button 
+          type="submit" 
+          id="submit-button"
+          class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Submit Petition
+        </button>
+        <%= link_to "Cancel", petitions_path, class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors text-center" %>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Load topics on page load
+async function loadTopics() {
+  const topicsLoading = document.getElementById('topics-loading');
+  const petitionForm = document.getElementById('petition-form');
+  const topicSelect = document.getElementById('topic');
+  
+  try {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    
+    const response = await fetch('/api/student/topics', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin'
+    });
+    
+    if (response.ok) {
+      const topics = await response.json();
+      
+      // Populate select dropdown
+      topics.forEach(topic => {
+        const option = document.createElement('option');
+        option.value = topic;
+        option.textContent = topic;
+        topicSelect.appendChild(option);
+      });
+      
+      // Hide loading, show form
+      topicsLoading.classList.add('hidden');
+      petitionForm.classList.remove('hidden');
+    } else {
+      throw new Error('Failed to load topics');
+    }
+  } catch (error) {
+    console.error('Error loading topics:', error);
+    topicsLoading.innerHTML = '<div class="text-red-600 text-center">Failed to load topics. Please refresh the page.</div>';
+  }
+}
+
+// Load topics when page is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadTopics);
+} else {
+  loadTopics();
+}
+
+document.getElementById('petition-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const submitButton = document.getElementById('submit-button');
+  const errorMessage = document.getElementById('error-message');
+  const successMessage = document.getElementById('success-message');
+  
+  // Hide previous messages
+  errorMessage.classList.add('hidden');
+  successMessage.classList.add('hidden');
+  
+  // Disable submit button
+  submitButton.disabled = true;
+  submitButton.textContent = 'Submitting...';
+  
+  const topic = document.getElementById('topic').value.trim();
+  const petitionContent = document.getElementById('petition_content').value.trim();
+  
+  if (!topic || !petitionContent) {
+    errorMessage.textContent = 'Please fill in all required fields';
+    errorMessage.classList.remove('hidden');
+    submitButton.disabled = false;
+    submitButton.textContent = 'Submit Petition';
+    return;
+  }
+  
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+  
+  try {
+    const response = await fetch('/api/student/petitions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        petition: {
+          topic: topic,
+          petition_content: petitionContent
+        }
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      successMessage.classList.remove('hidden');
+      document.getElementById('petition-form').reset();
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = '<%= petitions_path %>';
+      }, 2000);
+    } else {
+      const errors = data.errors || ['Failed to submit petition'];
+      errorMessage.textContent = Array.isArray(errors) ? errors.join(', ') : errors;
+      errorMessage.classList.remove('hidden');
+      submitButton.disabled = false;
+      submitButton.textContent = 'Submit Petition';
+    }
+  } catch (error) {
+    console.error('Error submitting petition:', error);
+    errorMessage.textContent = 'An error occurred while submitting your petition. Please try again.';
+    errorMessage.classList.remove('hidden');
+    submitButton.disabled = false;
+    submitButton.textContent = 'Submit Petition';
+  }
+});
+</script>
