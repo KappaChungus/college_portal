@@ -60,7 +60,39 @@ class I18n {
         submitting: 'Submitting...',
         petition_success: 'Petition submitted successfully! Redirecting...',
         required_fields: 'Please fill in all required fields',
-        submit_error: 'An error occurred while submitting your petition. Please try again.'
+        submit_error: 'An error occurred while submitting your petition. Please try again.',
+        
+        // Schedule page
+        weekly_schedule: 'Weekly Schedule',
+        loading_schedule: 'Loading schedule...',
+        no_schedule: 'No schedule available',
+        time: 'Time',
+        monday: 'Monday',
+        tuesday: 'Tuesday',
+        wednesday: 'Wednesday',
+        thursday: 'Thursday',
+        friday: 'Friday',
+        saturday: 'Saturday',
+        sunday: 'Sunday',
+        room: 'Room',
+        
+        // Surveys page
+        teacher_surveys: 'Teacher Surveys',
+        rate_your_teachers: 'Rate Your Teachers',
+        your_submitted_surveys: 'Your Submitted Surveys',
+        rate_teacher: 'Rate Teacher',
+        quality_of_classes: 'Quality of Classes Conducted',
+        ease_of_communication: 'Ease of Communication',
+        fair_and_clear_conditions: 'Fair and Clear Conditions',
+        detailed_opinion: 'Detailed Opinion (Optional)',
+        submit_survey: 'Submit Survey',
+        loading_teachers: 'Loading teachers...',
+        loading_surveys: 'Loading surveys...',
+        no_teachers_to_rate: 'All teachers have been rated or no current courses available',
+        no_surveys_submitted: 'No surveys submitted yet',
+        already_rated: 'Already Rated',
+        rated: 'Rated',
+        opinion_placeholder: 'Share your thoughts about the teacher...'
       },
       pl: {
         // Navigation  
@@ -119,7 +151,39 @@ class I18n {
         submitting: 'Wysyłanie...',
         petition_success: 'Podanie zostało wysłane pomyślnie! Przekierowanie...',
         required_fields: 'Proszę wypełnić wszystkie wymagane pola',
-        submit_error: 'Wystąpił błąd podczas wysyłania podania. Spróbuj ponownie.'
+        submit_error: 'Wystąpił błąd podczas wysyłania podania. Spróbuj ponownie.',
+        
+        // Schedule page
+        weekly_schedule: 'Plan zajęć',
+        loading_schedule: 'Ładowanie planu...',
+        no_schedule: 'Brak planu zajęć',
+        time: 'Godzina',
+        monday: 'Poniedziałek',
+        tuesday: 'Wtorek',
+        wednesday: 'Środa',
+        thursday: 'Czwartek',
+        friday: 'Piątek',
+        saturday: 'Sobota',
+        sunday: 'Niedziela',
+        room: 'Sala',
+        
+        // Surveys page
+        teacher_surveys: 'Ankiety nauczycieli',
+        rate_your_teachers: 'Oceń swoich wykładowców',
+        your_submitted_surveys: 'Twoje wysłane ankiety',
+        rate_teacher: 'Oceń wykładowcę',
+        quality_of_classes: 'Jakość prowadzonych zajęć',
+        ease_of_communication: 'Łatwość komunikacji',
+        fair_and_clear_conditions: 'Uczciwe i jasne warunki',
+        detailed_opinion: 'Szczegółowa opinia (Opcjonalne)',
+        submit_survey: 'Wyślij ankietę',
+        loading_teachers: 'Ładowanie wykładowców...',
+        loading_surveys: 'Ładowanie ankiet...',
+        no_teachers_to_rate: 'Wszyscy wykładowcy zostali ocenieni lub brak aktualnych kursów',
+        no_surveys_submitted: 'Nie wysłano jeszcze żadnych ankiet',
+        already_rated: 'Już oceniony',
+        rated: 'Oceniony',
+        opinion_placeholder: 'Podziel się swoimi przemyśleniami o wykładowcy...'
 
       }
     };

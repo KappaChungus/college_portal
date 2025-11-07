@@ -1,9 +1,9 @@
 <div class="max-w-7xl mx-auto">
-  <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Teacher Surveys</h1>
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6" data-i18n="teacher_surveys">Teacher Surveys</h1>
 
   <!-- Teachers to Rate Section -->
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Rate Your Teachers</h2>
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4" data-i18n="rate_your_teachers">Rate Your Teachers</h2>
     
     <!-- Loading state -->
     <div id="teachers-loading" class="flex items-center justify-center py-8">
@@ -11,7 +11,7 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      <span class="ml-3 text-gray-600 dark:text-gray-300">Loading teachers...</span>
+      <span class="ml-3 text-gray-600 dark:text-gray-300" data-i18n="loading_teachers">Loading teachers...</span>
     </div>
 
     <!-- Teachers list -->
@@ -22,7 +22,7 @@
       <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
       </svg>
-      <p class="mt-2 text-gray-600 dark:text-gray-300">All teachers have been rated or no current courses available</p>
+      <p class="mt-2 text-gray-600 dark:text-gray-300" data-i18n="no_teachers_to_rate">All teachers have been rated or no current courses available</p>
     </div>
 
     <!-- Error state -->
@@ -34,7 +34,7 @@
     <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-lg bg-white dark:bg-gray-800">
       <div class="mb-4">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Rate Teacher</h3>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100" data-i18n="rate_teacher">Rate Teacher</h3>
           <button onclick="closeSurveyModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -49,7 +49,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Quality of Classes Conducted (1-5) <span class="text-red-500">*</span>
+            <span data-i18n="quality_of_classes">Quality of Classes Conducted</span> (1-5) <span class="text-red-500">*</span>
           </label>
           <div class="flex gap-2">
             <input type="range" id="quality-of-classes" name="quality_of_classes_conducted" min="1" max="5" value="3" class="flex-1" required>
@@ -59,7 +59,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Ease of Communication (1-5) <span class="text-red-500">*</span>
+            <span data-i18n="ease_of_communication">Ease of Communication</span> (1-5) <span class="text-red-500">*</span>
           </label>
           <div class="flex gap-2">
             <input type="range" id="ease-of-communication" name="ease_of_communication" min="1" max="5" value="3" class="flex-1" required>
@@ -69,7 +69,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Fair and Clear Conditions (1-5) <span class="text-red-500">*</span>
+            <span data-i18n="fair_and_clear_conditions">Fair and Clear Conditions</span> (1-5) <span class="text-red-500">*</span>
           </label>
           <div class="flex gap-2">
             <input type="range" id="fair-conditions" name="fair_and_clear_conditions" min="1" max="5" value="3" class="flex-1" required>
@@ -78,7 +78,7 @@
         </div>
 
         <div>
-          <label for="detailed-opinion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label for="detailed-opinion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="detailed_opinion">
             Detailed Opinion (Optional)
           </label>
           <textarea 
@@ -87,6 +87,8 @@
             rows="4"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none"
             placeholder="Share your thoughts about the teacher..."
+            data-i18n="opinion_placeholder"
+            data-i18n-attr="placeholder"
           ></textarea>
         </div>
 
@@ -97,6 +99,7 @@
             type="submit" 
             id="survey-submit-button"
             class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            data-i18n="submit_survey"
           >
             Submit Survey
           </button>
@@ -104,6 +107,7 @@
             type="button" 
             onclick="closeSurveyModal()"
             class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition-colors"
+            data-i18n="cancel"
           >
             Cancel
           </button>
@@ -114,7 +118,7 @@
 
   <!-- Previous Surveys Section -->
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Submitted Surveys</h2>
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4" data-i18n="your_submitted_surveys">Your Submitted Surveys</h2>
     
     <!-- Loading state -->
     <div id="surveys-loading" class="flex items-center justify-center py-8">
@@ -122,7 +126,7 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      <span class="ml-3 text-gray-600 dark:text-gray-300">Loading surveys...</span>
+      <span class="ml-3 text-gray-600 dark:text-gray-300" data-i18n="loading_surveys">Loading surveys...</span>
     </div>
 
     <!-- Surveys list -->
@@ -133,7 +137,7 @@
       <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
       </svg>
-      <p class="mt-2 text-gray-600 dark:text-gray-300">No surveys submitted yet</p>
+      <p class="mt-2 text-gray-600 dark:text-gray-300" data-i18n="no_surveys_submitted">No surveys submitted yet</p>
     </div>
 
     <!-- Error state -->
@@ -198,6 +202,8 @@ async function loadTeachers() {
       
       if (item.rated) {
         // Show disabled button for rated teachers
+        const ratedText = window.t ? window.t('rated') : 'Rated';
+        const alreadyRatedText = window.t ? window.t('already_rated') : 'Already Rated';
         teacherCard.innerHTML = `
           <div>
             <h3 class="font-semibold text-gray-900 dark:text-gray-100">${item.teacher.name}</h3>
@@ -205,17 +211,18 @@ async function loadTeachers() {
             <p class="text-xs text-gray-500 dark:text-gray-400">${item.teacher.email}</p>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-sm text-green-600 dark:text-green-400 font-medium">✓ Rated</span>
+            <span class="text-sm text-green-600 dark:text-green-400 font-medium">✓ ${ratedText}</span>
             <button 
               disabled
               class="bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 font-medium py-2 px-4 rounded-lg cursor-not-allowed"
             >
-              Already Rated
+              ${alreadyRatedText}
             </button>
           </div>
         `;
       } else {
         // Show active button for unrated teachers
+        const rateTeacherText = window.t ? window.t('rate_teacher') : 'Rate Teacher';
         teacherCard.innerHTML = `
           <div>
             <h3 class="font-semibold text-gray-900 dark:text-gray-100">${item.teacher.name}</h3>
@@ -226,7 +233,7 @@ async function loadTeachers() {
             onclick="openSurveyModal(${item.teacher.id}, '${item.teacher.name}', '${item.subject || 'N/A'}')"
             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           >
-            Rate Teacher
+            ${rateTeacherText}
           </button>
         `;
       }
@@ -299,6 +306,10 @@ async function loadSurveys() {
       const surveyCard = document.createElement('div');
       surveyCard.className = 'p-4 border border-gray-200 dark:border-gray-700 dark:bg-gray-700 rounded-lg';
       
+      const qualityLabel = window.t ? window.t('quality_of_classes') : 'Quality of Classes';
+      const communicationLabel = window.t ? window.t('ease_of_communication') : 'Ease of Communication';
+      const conditionsLabel = window.t ? window.t('fair_and_clear_conditions') : 'Fair and Clear Conditions';
+      
       surveyCard.innerHTML = `
         <div class="flex justify-between items-start mb-3">
           <div>
@@ -309,15 +320,15 @@ async function loadSurveys() {
         ${survey.detail ? `
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
-              <span class="text-gray-600 dark:text-gray-300">Quality of Classes:</span>
+              <span class="text-gray-600 dark:text-gray-300">${qualityLabel}:</span>
               <span class="font-semibold text-gray-900 dark:text-gray-100">${survey.detail.quality_of_classes_conducted}/5</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-600 dark:text-gray-300">Ease of Communication:</span>
+              <span class="text-gray-600 dark:text-gray-300">${communicationLabel}:</span>
               <span class="font-semibold text-gray-900 dark:text-gray-100">${survey.detail.ease_of_communication}/5</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-600 dark:text-gray-300">Fair and Clear Conditions:</span>
+              <span class="text-gray-600 dark:text-gray-300">${conditionsLabel}:</span>
               <span class="font-semibold text-gray-900 dark:text-gray-100">${survey.detail.fair_and_clear_conditions}/5</span>
             </div>
             ${survey.detail.detailed_opinion ? `
@@ -401,7 +412,7 @@ document.getElementById('survey-form')?.addEventListener('submit', async (e) => 
   
   errorDiv.classList.add('hidden');
   submitButton.disabled = true;
-  submitButton.textContent = 'Submitting...';
+  submitButton.textContent = window.t ? window.t('submitting') : 'Submitting...';
   
   const formData = {
     survey: {
@@ -439,14 +450,14 @@ document.getElementById('survey-form')?.addEventListener('submit', async (e) => 
       errorDiv.textContent = Array.isArray(errors) ? errors.join(', ') : errors;
       errorDiv.classList.remove('hidden');
       submitButton.disabled = false;
-      submitButton.textContent = 'Submit Survey';
+      submitButton.textContent = window.t ? window.t('submit_survey') : 'Submit Survey';
     }
   } catch (error) {
     console.error('Error submitting survey:', error);
     errorDiv.textContent = 'Network error. Please try again.';
     errorDiv.classList.remove('hidden');
     submitButton.disabled = false;
-    submitButton.textContent = 'Submit Survey';
+    submitButton.textContent = window.t ? window.t('submit_survey') : 'Submit Survey';
   }
 });
 
