@@ -1,6 +1,7 @@
 class TeacherFrontendController < ApplicationController
   before_action :authenticate_user!
   before_action :require_teacher
+  layout "teacher"
 
   def index
   end

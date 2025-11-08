@@ -14,8 +14,10 @@ class StudentFrontendControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "student should NOT access teacher dashboard" do
-    get teacher_frontend_index_path
-    assert_redirected_to unauthenticated_root_path
+  test "student should NOT access teacher-specific page" do
+    # Students accessing teacher-only routes get 404 (route doesn't exist for them)
+    # This is due to the authenticated constraint in routes.rb
+    get manage_courses_path
+    assert_response :not_found
   end
 end

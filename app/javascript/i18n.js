@@ -92,7 +92,19 @@ class I18n {
         no_surveys_submitted: 'No surveys submitted yet',
         already_rated: 'Already Rated',
         rated: 'Rated',
-        opinion_placeholder: 'Share your thoughts about the teacher...'
+        opinion_placeholder: 'Share your thoughts about the teacher...',
+        
+        // Teacher navigation
+        students: 'Students',
+        grades: 'Grades',
+        survey_results: 'Survey Results',
+        
+        // Teacher surveys page
+        average_ratings: 'Average Ratings',
+        individual_surveys: 'Individual Surveys',
+        based_on: 'Based on',
+        surveys: 'surveys',
+        no_surveys: 'No surveys available'
       },
       pl: {
         // Navigation  
@@ -183,7 +195,19 @@ class I18n {
         no_surveys_submitted: 'Nie wysłano jeszcze żadnych ankiet',
         already_rated: 'Już oceniony',
         rated: 'Oceniony',
-        opinion_placeholder: 'Podziel się swoimi przemyśleniami o wykładowcy...'
+        opinion_placeholder: 'Podziel się swoimi przemyśleniami o wykładowcy...',
+        
+        // Teacher navigation
+        students: 'Studenci',
+        grades: 'Oceny',
+        survey_results: 'Wyniki ankiet',
+        
+        // Teacher surveys page
+        average_ratings: 'Średnie oceny',
+        individual_surveys: 'Poszczególne ankiety',
+        based_on: 'Na podstawie',
+        surveys: 'ankiet',
+        no_surveys: 'Brak dostępnych ankiet'
 
       }
     };

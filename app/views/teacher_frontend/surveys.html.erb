@@ -1,0 +1,218 @@
+<div class="max-w-7xl mx-auto">
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8" data-i18n="survey_results">Survey Results</h1>
+
+  <!-- Loading State -->
+  <div id="surveys-loading" class="flex items-center justify-center py-12">
+    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span class="ml-3 text-gray-600 dark:text-gray-300" data-i18n="loading">Loading...</span>
+  </div>
+
+  <!-- Averages Section -->
+  <div id="averages-section" class="hidden mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6" data-i18n="average_ratings">Average Ratings</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Quality of Classes -->
+      <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+        <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2" data-i18n="quality_of_classes">Quality of Classes</h3>
+        <div class="flex items-end">
+          <span id="avg-quality" class="text-4xl font-bold text-gray-900 dark:text-gray-100">-</span>
+          <span class="text-lg text-gray-500 dark:text-gray-400 ml-1 mb-1">/5</span>
+        </div>
+      </div>
+
+      <!-- Ease of Communication -->
+      <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+        <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2" data-i18n="ease_of_communication">Ease of Communication</h3>
+        <div class="flex items-end">
+          <span id="avg-communication" class="text-4xl font-bold text-gray-900 dark:text-gray-100">-</span>
+          <span class="text-lg text-gray-500 dark:text-gray-400 ml-1 mb-1">/5</span>
+        </div>
+      </div>
+
+      <!-- Fair and Clear Conditions -->
+      <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+        <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2" data-i18n="fair_conditions">Fair and Clear Conditions</h3>
+        <div class="flex items-end">
+          <span id="avg-fair" class="text-4xl font-bold text-gray-900 dark:text-gray-100">-</span>
+          <span class="text-lg text-gray-500 dark:text-gray-400 ml-1 mb-1">/5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 text-center">
+      <span class="text-sm text-gray-500 dark:text-gray-400">
+        <span data-i18n="based_on">Based on</span>
+        <span id="total-surveys" class="font-semibold">0</span>
+        <span data-i18n="surveys">surveys</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Individual Surveys Section -->
+  <div id="surveys-section" class="hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6" data-i18n="individual_surveys">Individual Surveys</h2>
+    
+    <div id="surveys-list" class="space-y-4">
+      <!-- Survey items will be inserted here -->
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div id="surveys-empty" class="hidden text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+    </svg>
+    <p class="mt-2 text-gray-600 dark:text-gray-300" data-i18n="no_surveys">No surveys available</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="surveys-error" class="hidden text-center py-12 text-red-600 dark:text-red-400"></div>
+</div>
+
+<script>
+  let surveysData = null; // Store survey data globally for language changes
+
+  async function loadSurveys() {
+    const loading = document.getElementById('surveys-loading');
+    const averagesSection = document.getElementById('averages-section');
+    const surveysSection = document.getElementById('surveys-section');
+    const empty = document.getElementById('surveys-empty');
+    const error = document.getElementById('surveys-error');
+    const surveysList = document.getElementById('surveys-list');
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      
+      // Load averages and surveys
+      const [averagesResponse, surveysResponse] = await Promise.all([
+        fetch('/api/teacher/surveys/averages', {
+          headers: {
+            'X-CSRF-Token': csrfToken,
+            'Accept': 'application/json'
+          },
+          credentials: 'same-origin'
+        }),
+        fetch('/api/teacher/surveys', {
+          headers: {
+            'X-CSRF-Token': csrfToken,
+            'Accept': 'application/json'
+          },
+          credentials: 'same-origin'
+        })
+      ]);
+
+      loading.classList.add('hidden');
+
+      if (!averagesResponse.ok || !surveysResponse.ok) {
+        if (averagesResponse.status === 404 || surveysResponse.status === 404) {
+          empty.classList.remove('hidden');
+          return;
+        }
+        throw new Error('Failed to load surveys');
+      }
+
+      const averagesData = await averagesResponse.json();
+      surveysData = await surveysResponse.json(); // Store globally
+
+      // Display averages
+      document.getElementById('avg-quality').textContent = averagesData.averages.quality_of_classes_conducted || '-';
+      document.getElementById('avg-communication').textContent = averagesData.averages.ease_of_communication || '-';
+      document.getElementById('avg-fair').textContent = averagesData.averages.fair_and_clear_conditions || '-';
+      document.getElementById('total-surveys').textContent = averagesData.count;
+
+      averagesSection.classList.remove('hidden');
+
+      // Display individual surveys
+      renderSurveysList();
+
+    } catch (err) {
+      console.error('Error loading surveys:', err);
+      loading.classList.add('hidden');
+      error.textContent = 'Failed to load surveys. Please refresh the page.';
+      error.classList.remove('hidden');
+    }
+  }
+
+  function renderSurveysList() {
+    const surveysList = document.getElementById('surveys-list');
+    const surveysSection = document.getElementById('surveys-section');
+    const empty = document.getElementById('surveys-empty');
+
+    if (surveysData && surveysData.surveys && surveysData.surveys.length > 0) {
+      surveysList.innerHTML = '';
+      
+      surveysData.surveys.forEach(survey => {
+          const surveyCard = document.createElement('div');
+          surveyCard.className = 'bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600';
+          
+          const date = new Date(survey.created_at).toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+
+        const detail = survey.detail || {};
+        
+        const qualityLabel = window.t ? window.t('quality_of_classes') : 'Quality of Classes';
+        const communicationLabel = window.t ? window.t('ease_of_communication') : 'Ease of Communication';
+        const fairLabel = window.t ? window.t('fair_conditions') : 'Fair and Clear Conditions';
+        const opinionLabel = window.t ? window.t('detailed_opinion') : 'Detailed Opinion';
+        
+        surveyCard.innerHTML = `
+          <div class="flex justify-between items-start mb-4">
+            <div class="text-sm text-gray-500 dark:text-gray-400">${date}</div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <span class="text-xs text-gray-500 dark:text-gray-400">${qualityLabel}</span>
+              <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">${detail.quality_of_classes_conducted || '-'}/5</div>
+            </div>
+            <div>
+              <span class="text-xs text-gray-500 dark:text-gray-400">${communicationLabel}</span>
+              <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">${detail.ease_of_communication || '-'}/5</div>
+            </div>
+            <div>
+              <span class="text-xs text-gray-500 dark:text-gray-400">${fairLabel}</span>
+              <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">${detail.fair_and_clear_conditions || '-'}/5</div>
+            </div>
+          </div>
+          
+          ${detail.detailed_opinion ? `
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">${opinionLabel}:</span>
+              <p class="mt-2 text-gray-600 dark:text-gray-400 italic">"${detail.detailed_opinion}"</p>
+            </div>
+          ` : ''}
+        `;
+        
+        surveysList.appendChild(surveyCard);
+      });
+
+      surveysSection.classList.remove('hidden');
+    } else {
+      empty.classList.remove('hidden');
+    }
+  }
+
+  // Load surveys on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSurveys);
+  } else {
+    loadSurveys();
+  }
+
+  // Also load on Turbo navigation
+  document.addEventListener('turbo:load', loadSurveys);
+
+  // Re-render survey list when language changes
+  document.addEventListener('languageChanged', () => {
+    if (surveysData) {
+      renderSurveysList();
+    }
+  });
+</script>

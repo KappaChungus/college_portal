@@ -2,7 +2,7 @@ module Api
   module Teacher
     class SchedulesController < BaseController
       # GET /api/teacher/schedule
-      def index
+      def schedule
   unless current_user.is_a?(::Teacher)
           render json: { error: "Access denied" }, status: :forbidden and return
   end

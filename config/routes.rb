@@ -1,14 +1,20 @@
 Rails.application.routes.draw do
   devise_for :users, skip: [ :registrations ]
 
+  # front for teachers
+
   authenticated :user, ->(u) { u.is_a?(Teacher) } do
-    root to: "teacher_frontend#index", as: :teacher_root
+    root to: "teacher_frontend#dashboard", as: :teacher_root
+    get "dashboard", to: "teacher_frontend#dashboard"
+    get "schedule", to: "teacher_frontend#schedule"
+    get "surveys", to: "teacher_frontend#surveys"
+    get "manage_courses", to: "teacher_frontend#manage_courses"
   end
 
+  # front for students
   authenticated :user, ->(u) { u.is_a?(Student) } do
-    # front
-    root to: "student_frontend#index", as: :student_root
-    get "dashboard", to: "student_frontend#index"
+    root to: "student_frontend#dashboard", as: :student_root
+    get "dashboard", to: "student_frontend#dashboard"
     get "study_progress", to: "student_frontend#study_progress"
     get "schedule", to: "student_frontend#schedule"
     get "petitions", to: "student_frontend#petitions"
@@ -16,8 +22,6 @@ Rails.application.routes.draw do
     get "surveys", to: "student_frontend#surveys"
   end
 
-  get "teacher_frontend/index"
-  get "student_frontend/index"
 
   devise_scope :user do
     unauthenticated do
@@ -46,15 +50,9 @@ Rails.application.routes.draw do
     end
 
     namespace :teacher do
-      get "surveys", to: "surveys#index"
-      get "schedule", to: "schedules#index"
-      resources :manage_courses, path: "courses", only: [ :index, :show ] do
-        member do
-          get "students"
-          post "student/:student_id/mark", to: "manage_courses#mark"
-          get "student/:student_id/marks", to: "manage_courses#marks"
-        end
-      end
+      get "surveys", to: "surveys#surveys"
+      get "surveys/averages", to: "surveys#averages"
+      get "schedule", to: "schedules#schedule"
       resources :manage_courses, path: "courses", only: [ :index, :show ] do
         member do
           get "students"
