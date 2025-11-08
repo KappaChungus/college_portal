@@ -230,7 +230,7 @@ async function loadTeachers() {
             <p class="text-xs text-gray-500 dark:text-gray-400">${item.teacher.email}</p>
           </div>
           <button 
-            onclick="openSurveyModal(${item.teacher.id}, '${item.teacher.name}', '${item.subject || 'N/A'}')"
+            onclick="openSurveyModal(${item.student_course_id}, ${item.teacher.id}, '${item.teacher.name}', '${item.subject || 'N/A'}')"
             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           >
             ${rateTeacherText}
@@ -352,43 +352,15 @@ async function loadSurveys() {
 }
 
 // Open survey modal
-async function openSurveyModal(teacherId, teacherName, subject) {
-  try {
-    // Get student course ID for this teacher
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-    const response = await fetch('/api/student/current_teachers', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      credentials: 'same-origin'
-    });
+function openSurveyModal(studentCourseId, teacherId, teacherName, subject) {
+  currentTeacher = { id: teacherId, name: teacherName, subject };
+  currentStudentCourseId = studentCourseId;
 
-    if (!response.ok) throw new Error('Failed to load teacher info');
-
-    const teachers = await response.json();
-    const teacherData = teachers.find(t => t.teacher.id === teacherId);
-    
-    if (!teacherData) {
-      alert('Teacher data not found');
-      return;
-    }
-
-    // Note: We need to get student_course_id. The API doesn't return it directly,
-    // so we'll need to modify this. For now, we'll use teacher_id
-    currentTeacher = { id: teacherId, name: teacherName, subject };
-    currentStudentCourseId = teacherId; // This should be student_course_id
-
-    document.getElementById('survey-teacher-info').innerHTML = `
-      <strong>${teacherName}</strong> - ${subject}
-    `;
-    
-    document.getElementById('survey-modal').classList.remove('hidden');
-  } catch (err) {
-    console.error('Error opening modal:', err);
-    alert('Failed to open survey form');
-  }
+  document.getElementById('survey-teacher-info').innerHTML = `
+    <strong>${teacherName}</strong> - ${subject}
+  `;
+  
+  document.getElementById('survey-modal').classList.remove('hidden');
 }
 
 // Close survey modal
@@ -471,4 +443,23 @@ if (document.readyState === 'loading') {
   loadTeachers();
   loadSurveys();
 }
+
+// Handle Turbo navigation
+document.addEventListener('turbo:before-cache', function() {
+  // Reset to loading state before caching
+  document.getElementById('teachers-loading').classList.remove('hidden');
+  document.getElementById('teachers-container').classList.add('hidden');
+  document.getElementById('teachers-empty').classList.add('hidden');
+  document.getElementById('teachers-error').classList.add('hidden');
+  
+  document.getElementById('surveys-loading').classList.remove('hidden');
+  document.getElementById('surveys-container').classList.add('hidden');
+  document.getElementById('surveys-empty').classList.add('hidden');
+  document.getElementById('surveys-error').classList.add('hidden');
+});
+
+document.addEventListener('turbo:load', function() {
+  loadTeachers();
+  loadSurveys();
+});
 </script>

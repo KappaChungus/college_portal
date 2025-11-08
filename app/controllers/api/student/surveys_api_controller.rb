@@ -13,6 +13,7 @@ module Api
           next unless sc.teacher
 
           {
+            student_course_id: sc.id,
             teacher: sc.teacher.as_json(only: [ :id, :name, :email ]),
             rated: sc.respond_to?(:rated) ? !!sc.rated : false,
             subject: sc.course&.title || sc.course&.code

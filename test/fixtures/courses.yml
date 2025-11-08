@@ -1,6 +1,11 @@
-one:
+math_course:
   title: Mathematics 101
   code: MATH101
+  teacher_id: <%= ActiveRecord::FixtureSet.identify(:teacher) %>
+
+one:
+  title: Advanced Mathematics
+  code: MATH201
   teacher_id: <%= ActiveRecord::FixtureSet.identify(:teacher_one) %>
 
 two:

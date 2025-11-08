@@ -60,6 +60,16 @@ class I18n {
         by: 'By',
         previous: 'Previous',
         next: 'Next',
+        add_announcement: 'Add Announcement',
+        title: 'Title',
+        date: 'Date',
+        create: 'Create',
+        confirm_delete: 'Are you sure you want to delete this announcement?',
+        quick_overview: 'Quick Overview',
+        total_courses: 'Total Courses',
+        total_students: 'Total Students',
+        pending_surveys: 'Pending Surveys',
+        edit_announcement: 'Edit Announcement',
         
         // Petitions page
         my_petitions: 'My Petitions',
@@ -195,6 +205,16 @@ class I18n {
         by: 'Przez',
         previous: 'Poprzednia',
         next: 'Następna',
+        add_announcement: 'Dodaj ogłoszenie',
+        title: 'Tytuł',
+        date: 'Data',
+        create: 'Utwórz',
+        confirm_delete: 'Czy na pewno chcesz usunąć to ogłoszenie?',
+        quick_overview: 'Szybki przegląd',
+        total_courses: 'Wszystkie kursy',
+        total_students: 'Wszyscy studenci',
+        pending_surveys: 'Oczekujące ankiety',
+        edit_announcement: 'Edytuj ogłoszenie',
         
         // Petitions page
         my_petitions: 'Moje podania',
