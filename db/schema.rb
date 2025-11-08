@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_08_190907) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_08_202351) do
   create_table "announcements", force: :cascade do |t|
     t.text "content", null: false
     t.datetime "created_at", null: false
@@ -126,15 +126,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_08_190907) do
     t.datetime "created_at", null: false
     t.string "email"
     t.string "encrypted_password", default: "", null: false
-    t.integer "group_id"
     t.string "name"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.string "science_title"
     t.string "type"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["group_id"], name: "index_users_on_group_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -153,5 +152,4 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_08_190907) do
   add_foreign_key "survey_details", "surveys"
   add_foreign_key "surveys", "student_courses"
   add_foreign_key "surveys", "users", column: "teacher_id"
-  add_foreign_key "users", "groups"
 end

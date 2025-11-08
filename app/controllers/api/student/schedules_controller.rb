@@ -7,12 +7,14 @@ module Api
           render json: { error: "Access denied" }, status: :forbidden and return
         end
 
-        group = current_user.group
-        unless group
-          render json: {}, status: :not_found and return
+        student = current_user.becomes(::Student)
+        groups = student.groups
+
+        if groups.empty?
+          render json: {} and return
         end
 
-        sessions = Schedule.where(group: group).includes(:course, :teacher).order(:day_of_week, :start_time)
+        sessions = Schedule.where(group: groups).includes(:course, :teacher).order(:day_of_week, :start_time)
 
         grouped = sessions.group_by(&:day_of_week).transform_values do |arr|
           arr.map do |s|

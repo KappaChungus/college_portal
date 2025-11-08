@@ -18,6 +18,9 @@ class TeacherFrontendController < ApplicationController
   def manage_courses
   end
 
+  def profile
+  end
+
   def course
   end
 

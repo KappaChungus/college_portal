@@ -22,13 +22,14 @@ end
 
 puts "Creating Teachers..."
 teachers = []
+science_titles = [ "PhD", "MSc", "Prof.", "Dr.", "Assoc. Prof." ]
 3.times do |i|
   teachers << User.create!(
     name: "Teacher #{i + 1}",
     email: "teacher#{i + 1}@example.com",
     password: "password",
     type: "Teacher",
-    group: groups.sample
+    science_title: science_titles.sample
   )
 end
 
@@ -39,8 +40,7 @@ students = []
     name: "Student #{i + 1}",
     email: "student#{i + 1}@example.com",
     password: "password",
-    type: "Student",
-    group: groups.sample
+    type: "Student"
   )
 end
 
@@ -146,7 +146,7 @@ students.each do |student|
       final_grade: final_grade,
       status: status,
       retaken: [ true, false ].sample,
-      group_code: student.group.name
+      group_code: course.group&.name
     )
   end
 end
@@ -178,13 +178,14 @@ Group.find_each do |group|
     day = days.sample
     slot = time_slots.sample
     start_time, end_time = slot
+    room_number = rand(100..500)
 
     # check overlap
     overlap = Schedule.where(group: group, day_of_week: day)
                       .where("start_time < ? AND end_time > ?", end_time, start_time)
     next if overlap.exists?
 
-    session = Schedule.new(group: group, course: course, day_of_week: day, start_time: start_time, end_time: end_time, teacher: course.teacher)
+    session = Schedule.new(group: group, course: course, day_of_week: day, start_time: start_time, end_time: end_time, room: room_number.to_s, teacher: course.teacher)
     if session.save
       created += 1
     end

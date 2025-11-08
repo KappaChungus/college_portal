@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     get "surveys", to: "teacher_frontend#surveys"
     get "manage_courses", to: "teacher_frontend#manage_courses"
     get "course/:id", to: "teacher_frontend#course", as: :teacher_course
+    get "profile", to: "teacher_frontend#profile"
   end
 
   # front for students
@@ -75,6 +76,11 @@ Rails.application.routes.draw do
       post "announcements", to: "dashboard#create_announcement"
       put "announcements/:id", to: "dashboard#update_announcement"
       delete "announcements/:id", to: "dashboard#delete_announcement"
+
+      # Profile
+      get "profile", to: "profile#show"
+      put "profile", to: "profile#update"
+      patch "profile", to: "profile#update"
     end
 
     # Schedule (was class_sessions)
