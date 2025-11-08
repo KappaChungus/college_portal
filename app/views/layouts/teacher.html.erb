@@ -91,6 +91,9 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-white dark:bg-gray-800 shadow-md p-4 overflow-y-auto transition-colors">
           <nav class="space-y-2">
+            <%= link_to profile_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
+              <span data-i18n="profile">Profile</span>
+            <% end %>
             <%= link_to dashboard_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
               <span data-i18n="dashboard">Dashboard</span>
             <% end %>
@@ -103,6 +106,7 @@
             <%= link_to surveys_path, class: "block py-2 px-3 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" do %>
               <span data-i18n="survey_results">Survey Results</span>
             <% end %>
+            
           </nav>
         </aside>
 

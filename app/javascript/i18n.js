@@ -275,7 +275,7 @@ class I18n {
         average_ratings: 'Średnie oceny',
         individual_surveys: 'Poszczególne ankiety',
         based_on: 'Na podstawie',
-        surveys: 'ankiet',
+        surveys: 'Ankiety',
         no_surveys: 'Brak dostępnych ankiet',
         
         // Teacher courses page

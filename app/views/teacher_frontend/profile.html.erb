@@ -1,8 +1,9 @@
-<div class="max-w-4xl mx-auto">
+<div class="max-w-7xl mx-auto">
   <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6" data-i18n="profile">Profile</h1>
 
-  <!-- Profile Information Card -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Profile Information Card -->
+    <div class="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
     <div id="profile-loading" class="flex items-center justify-center py-8">
       <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -40,6 +41,40 @@
     </div>
 
     <div id="profile-error" class="hidden text-center py-8 text-red-600 dark:text-red-400"></div>
+  </div>
+
+  <!-- Quick Overview Stats -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <span data-i18n="quick_overview">Quick Overview</span>
+    </h2>
+    
+    <!-- Loading state for stats -->
+    <div id="stats-loading" class="flex items-center justify-center py-8">
+      <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+
+    <div id="stats-content" class="hidden space-y-4">
+      <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400" data-i18n="total_courses">Total Courses</div>
+        <div id="total-courses" class="text-2xl font-bold text-blue-600 dark:text-blue-400">-</div>
+      </div>
+      
+      <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400" data-i18n="total_students">Total Students</div>
+        <div id="total-students" class="text-2xl font-bold text-green-600 dark:text-green-400">-</div>
+      </div>
+    </div>
+
+    <div id="stats-error" class="hidden text-center py-8 text-red-600 dark:text-red-400"></div>
+  </div>
+
   </div>
 </div>
 
@@ -96,11 +131,52 @@ async function loadProfile() {
   }
 }
 
-// Load profile on page load
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadProfile);
-} else {
+async function loadStats() {
+  const statsLoading = document.getElementById('stats-loading');
+  const statsContent = document.getElementById('stats-content');
+  const statsError = document.getElementById('stats-error');
+  
+  try {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    
+    const response = await fetch('/api/teacher/profile/stats', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin'
+    });
+
+    if (!response.ok) throw new Error('Failed to load stats');
+
+    const stats = await response.json();
+    
+    statsLoading.classList.add('hidden');
+    statsContent.classList.remove('hidden');
+
+    // Populate stats
+    document.getElementById('total-courses').textContent = stats.total_courses || 0;
+    document.getElementById('total-students').textContent = stats.total_students || 0;
+
+  } catch (err) {
+    console.error('Error loading stats:', err);
+    statsLoading.classList.add('hidden');
+    statsError.textContent = 'Failed to load statistics.';
+    statsError.classList.remove('hidden');
+  }
+}
+
+function loadAll() {
   loadProfile();
+  loadStats();
+}
+
+// Load data on page load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadAll);
+} else {
+  loadAll();
 }
 
 // Handle Turbo navigation
@@ -108,10 +184,14 @@ document.addEventListener('turbo:before-cache', function() {
   document.getElementById('profile-loading').classList.remove('hidden');
   document.getElementById('profile-content').classList.add('hidden');
   document.getElementById('profile-error').classList.add('hidden');
+  
+  document.getElementById('stats-loading').classList.remove('hidden');
+  document.getElementById('stats-content').classList.add('hidden');
+  document.getElementById('stats-error').classList.add('hidden');
 });
 
-document.addEventListener('turbo:load', loadProfile);
+document.addEventListener('turbo:load', loadAll);
 
 // Reload on language change
-window.addEventListener('languageChanged', loadProfile);
+window.addEventListener('languageChanged', loadAll);
 </script>

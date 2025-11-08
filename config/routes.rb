@@ -79,6 +79,7 @@ Rails.application.routes.draw do
 
       # Profile
       get "profile", to: "profile#show"
+      get "profile/stats", to: "profile#stats"
       put "profile", to: "profile#update"
       patch "profile", to: "profile#update"
     end

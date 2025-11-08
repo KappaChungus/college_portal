@@ -241,4 +241,18 @@ if (document.readyState === 'loading') {
 
 // Reload on language change
 window.addEventListener('languageChanged', loadDashboardData);
+
+// Handle Turbo navigation
+document.addEventListener('turbo:before-cache', function() {
+  // Reset to loading state before caching
+  document.getElementById('announcements-loading').classList.remove('hidden');
+  document.getElementById('announcements-content').classList.add('hidden');
+  document.getElementById('announcements-error').classList.add('hidden');
+  
+  document.getElementById('grades-loading').classList.remove('hidden');
+  document.getElementById('grades-content').classList.add('hidden');
+  document.getElementById('grades-error').classList.add('hidden');
+});
+
+document.addEventListener('turbo:load', loadDashboardData);
 </script>
