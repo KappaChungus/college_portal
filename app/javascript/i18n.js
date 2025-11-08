@@ -43,6 +43,15 @@ class I18n {
         no_groups: 'No groups assigned',
         no_courses: 'No courses enrolled',
         load_error: 'Error loading data',
+        current_courses: 'Current Courses',
+        passed_courses: 'Passed Courses',
+        failed_courses: 'Failed Courses',
+        show_passed_courses: 'Show Passed Courses',
+        hide_passed_courses: 'Hide Passed Courses',
+        show_failed_courses: 'Show Failed Courses',
+        hide_failed_courses: 'Hide Failed Courses',
+        course_grades: 'Course Grades',
+        test_grades: 'Test Grades',
         
         // Petitions page
         my_petitions: 'My Petitions',
@@ -104,7 +113,22 @@ class I18n {
         individual_surveys: 'Individual Surveys',
         based_on: 'Based on',
         surveys: 'surveys',
-        no_surveys: 'No surveys available'
+        no_surveys: 'No surveys available',
+        
+        // Teacher courses page
+        view_details: 'View details',
+        back_to_courses: 'Back to Courses',
+        group: 'Group',
+        email: 'Email',
+        actions: 'Actions',
+        no_students: 'No students enrolled',
+        view_grades: 'View Grades',
+        add_grade: 'Add Grade',
+        edit_grade: 'Edit Grade',
+        name: 'Name',
+        grade_name: 'Grade Name',
+        mark: 'Mark',
+        no_grades: 'No grades recorded yet'
       },
       pl: {
         // Navigation  
@@ -146,6 +170,15 @@ class I18n {
         no_groups: 'Brak przypisanych grup',
         no_courses: 'Brak zapisanych kursów',
         load_error: 'Błąd wczytywania danych',
+        current_courses: 'Aktywne kursy',
+        passed_courses: 'Zaliczone kursy',
+        failed_courses: 'Niezaliczone kursy',
+        show_passed_courses: 'Pokaż zaliczone kursy',
+        hide_passed_courses: 'Ukryj zaliczone kursy',
+        show_failed_courses: 'Pokaż niezaliczone kursy',
+        hide_failed_courses: 'Ukryj niezaliczone kursy',
+        course_grades: 'Oceny z kursu',
+        test_grades: 'Oceny z testów',
         
         // Petitions page
         my_petitions: 'Moje podania',
@@ -207,7 +240,22 @@ class I18n {
         individual_surveys: 'Poszczególne ankiety',
         based_on: 'Na podstawie',
         surveys: 'ankiet',
-        no_surveys: 'Brak dostępnych ankiet'
+        no_surveys: 'Brak dostępnych ankiet',
+        
+        // Teacher courses page
+        view_details: 'Zobacz szczegóły',
+        back_to_courses: 'Powrót do kursów',
+        group: 'Grupa',
+        email: 'Email',
+        actions: 'Akcje',
+        no_students: 'Brak zapisanych studentów',
+        view_grades: 'Zobacz oceny',
+        add_grade: 'Dodaj ocenę',
+        edit_grade: 'Edytuj ocenę',
+        name: 'Imię',
+        grade_name: 'Nazwa oceny',
+        mark: 'Ocena',
+        no_grades: 'Nie zapisano jeszcze żadnych ocen'
 
       }
     };

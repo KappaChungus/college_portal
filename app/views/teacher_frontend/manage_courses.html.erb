@@ -1,0 +1,121 @@
+<div class="max-w-7xl mx-auto">
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8" data-i18n="my_courses">My Courses</h1>
+
+  <!-- Loading State -->
+  <div id="courses-loading" class="flex items-center justify-center py-12">
+    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span class="ml-3 text-gray-600 dark:text-gray-300" data-i18n="loading">Loading...</span>
+  </div>
+
+  <!-- Courses List -->
+  <div id="courses-content" class="hidden">
+    <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Course cards will be inserted here -->
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div id="courses-empty" class="hidden text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+    </svg>
+    <p class="mt-2 text-gray-600 dark:text-gray-300" data-i18n="no_courses">No courses assigned</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="courses-error" class="hidden text-center py-12 text-red-600 dark:text-red-400"></div>
+</div>
+
+<script>
+  async function loadCourses() {
+    const loading = document.getElementById('courses-loading');
+    const content = document.getElementById('courses-content');
+    const empty = document.getElementById('courses-empty');
+    const error = document.getElementById('courses-error');
+    const grid = document.getElementById('courses-grid');
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      
+      const response = await fetch('/api/teacher/courses', {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      loading.classList.add('hidden');
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          empty.classList.remove('hidden');
+          return;
+        }
+        throw new Error('Failed to load courses');
+      }
+
+      const courses = await response.json();
+      
+      if (!courses || courses.length === 0) {
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      // Render courses
+      grid.innerHTML = '';
+      
+      courses.forEach(course => {
+        const courseCard = document.createElement('a');
+        courseCard.href = `/course/${course.id}`;
+        courseCard.className = 'block bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400';
+        
+        courseCard.innerHTML = `
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                ${course.code}
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                ${course.title}
+              </p>
+            </div>
+            <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+          
+          <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <span data-i18n="view_details">View details</span>
+          </div>
+        `;
+        
+        grid.appendChild(courseCard);
+      });
+
+      content.classList.remove('hidden');
+
+    } catch (err) {
+      console.error('Error loading courses:', err);
+      loading.classList.add('hidden');
+      error.textContent = 'Failed to load courses. Please refresh the page.';
+      error.classList.remove('hidden');
+    }
+  }
+
+  // Load courses on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadCourses);
+  } else {
+    loadCourses();
+  }
+
+  // Also load on Turbo navigation
+  document.addEventListener('turbo:load', loadCourses);
+</script>

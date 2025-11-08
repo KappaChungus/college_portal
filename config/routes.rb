@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     get "schedule", to: "teacher_frontend#schedule"
     get "surveys", to: "teacher_frontend#surveys"
     get "manage_courses", to: "teacher_frontend#manage_courses"
+    get "course/:id", to: "teacher_frontend#course", as: :teacher_course
   end
 
   # front for students
@@ -31,8 +32,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :student do
-      get "courses", to: "student_api#courses"
-      get "groups", to: "student_api#groups"
+      get "courses", to: "study_progress#courses"
+      get "courses/:course_id/grades", to: "study_progress#grades"
+      get "groups", to: "study_progress#groups"
       get "current_teachers", to: "surveys_api#current_teachers"
       get "teachers/:teacher_id/rated", to: "surveys_api#teacher_rated"
       post "surveys", to: "surveys_api#create"
@@ -41,9 +43,9 @@ Rails.application.routes.draw do
       get "petitions", to: "petitions_api#my_petitions"
       post "petitions", to: "petitions_api#create"
 
-      get "profile", to: "student_api#profile"
-      put "profile", to: "student_api#update_profile"
-      patch "profile", to: "student_api#update_profile"
+      get "profile", to: "study_progress#profile"
+      put "profile", to: "study_progress#update_profile"
+      patch "profile", to: "study_progress#update_profile"
 
       get "schedule", to: "schedules#index"
       get "topics", to: "petitions_api#topics"
@@ -58,6 +60,9 @@ Rails.application.routes.draw do
           get "students"
           post "student/:student_id/mark", to: "manage_courses#mark"
           get "student/:student_id/marks", to: "manage_courses#marks"
+          get "student/:student_id/grades", to: "manage_courses#grades"
+          put "student/:student_id/grade/:grade_index", to: "manage_courses#update_grade"
+          delete "student/:student_id/grade/:grade_index", to: "manage_courses#delete_grade"
         end
       end
     end

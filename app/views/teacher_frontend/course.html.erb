@@ -1,0 +1,522 @@
+<div class="max-w-7xl mx-auto">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <a href="/manage_courses" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      <span data-i18n="back_to_courses">Back to Courses</span>
+    </a>
+  </div>
+
+  <!-- Loading State -->
+  <div id="course-loading" class="flex items-center justify-center py-12">
+    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span class="ml-3 text-gray-600 dark:text-gray-300" data-i18n="loading">Loading...</span>
+  </div>
+
+  <!-- Course Details -->
+  <div id="course-content" class="hidden">
+    <!-- Course Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h1 id="course-code" class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2"></h1>
+          <h2 id="course-title" class="text-xl text-gray-600 dark:text-gray-400"></h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div>
+          <span class="text-sm text-gray-500 dark:text-gray-400" data-i18n="teacher">Teacher</span>
+          <p id="course-teacher" class="text-gray-900 dark:text-gray-100 font-medium"></p>
+        </div>
+        <div>
+          <span class="text-sm text-gray-500 dark:text-gray-400" data-i18n="group">Group</span>
+          <p id="course-group" class="text-gray-900 dark:text-gray-100 font-medium"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Students Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6" data-i18n="students">Students</h3>
+      
+      <!-- Students Loading -->
+      <div id="students-loading" class="flex items-center justify-center py-8">
+        <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+
+      <!-- Students List -->
+      <div id="students-list" class="hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="name">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="email">Email</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <!-- Student rows will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Empty Students State -->
+      <div id="students-empty" class="hidden text-center py-8">
+        <p class="text-gray-600 dark:text-gray-400" data-i18n="no_students">No students enrolled</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div id="course-error" class="hidden text-center py-12 text-red-600 dark:text-red-400"></div>
+</div>
+
+<!-- Grades Modal -->
+<div id="grades-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100" id="grades-modal-title">Student Grades</h3>
+      <button onclick="closeGradesModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <div id="grades-content">
+      <!-- Grades will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<!-- Edit Grade Modal -->
+<div id="edit-grade-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100" data-i18n="edit_grade">Edit Grade</h3>
+      <button onclick="closeEditGradeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <form id="edit-grade-form" class="space-y-4">
+      <input type="hidden" id="edit-grade-index">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="grade_name">Grade Name</label>
+        <input type="text" id="edit-grade-name" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" placeholder="e.g., Midterm Exam">
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="mark">Mark</label>
+        <input type="number" id="edit-grade-mark" required min="0" max="100" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" placeholder="0-100">
+      </div>
+      
+      <div class="flex justify-end space-x-3 mt-6">
+        <button type="button" onclick="closeEditGradeModal()" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" data-i18n="save">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Grade Modal -->
+<div id="add-grade-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/3 shadow-lg rounded-md bg-white dark:bg-gray-800">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100" data-i18n="add_grade">Add Grade</h3>
+      <button onclick="closeAddGradeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <form id="add-grade-form" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="grade_name">Grade Name</label>
+        <input type="text" id="grade-name" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" placeholder="e.g., Midterm Exam">
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="mark">Mark</label>
+        <input type="number" id="grade-mark" required min="0" max="100" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" placeholder="0-100">
+      </div>
+      
+      <div class="flex justify-end space-x-3 mt-6">
+        <button type="button" onclick="closeAddGradeModal()" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500" data-i18n="cancel">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" data-i18n="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let courseId = null;
+  let currentStudentId = null;
+
+  async function loadCourseDetails() {
+    const loading = document.getElementById('course-loading');
+    const content = document.getElementById('course-content');
+    const error = document.getElementById('course-error');
+
+    // Extract course ID from URL
+    const pathParts = window.location.pathname.split('/');
+    courseId = pathParts[pathParts.length - 1];
+
+    if (!courseId) {
+      error.textContent = 'Invalid course ID';
+      error.classList.remove('hidden');
+      loading.classList.add('hidden');
+      return;
+    }
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      
+      const response = await fetch(`/api/teacher/courses/${courseId}`, {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      loading.classList.add('hidden');
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          error.textContent = 'Course not found';
+        } else if (response.status === 403) {
+          error.textContent = 'Access denied';
+        } else {
+          error.textContent = 'Failed to load course';
+        }
+        error.classList.remove('hidden');
+        return;
+      }
+
+      const course = await response.json();
+      
+      // Display course details
+      document.getElementById('course-code').textContent = course.code;
+      document.getElementById('course-title').textContent = course.title;
+      document.getElementById('course-teacher').textContent = course.teacher?.name || 'N/A';
+      document.getElementById('course-group').textContent = course.group?.name || 'N/A';
+
+      content.classList.remove('hidden');
+
+      // Load students
+      loadStudents();
+
+    } catch (err) {
+      console.error('Error loading course:', err);
+      loading.classList.add('hidden');
+      error.textContent = 'Failed to load course. Please refresh the page.';
+      error.classList.remove('hidden');
+    }
+  }
+
+  async function loadStudents() {
+    const studentsLoading = document.getElementById('students-loading');
+    const studentsList = document.getElementById('students-list');
+    const studentsEmpty = document.getElementById('students-empty');
+    const studentsTbody = document.getElementById('students-tbody');
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      
+      const response = await fetch(`/api/teacher/courses/${courseId}/students`, {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      studentsLoading.classList.add('hidden');
+
+      if (!response.ok) {
+        studentsEmpty.classList.remove('hidden');
+        return;
+      }
+
+      const students = await response.json();
+      
+      if (!students || students.length === 0) {
+        studentsEmpty.classList.remove('hidden');
+        return;
+      }
+
+      // Render students
+      studentsTbody.innerHTML = '';
+      
+      students.forEach(student => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+        
+        row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">${student.name}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-500 dark:text-gray-400">${student.email}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+            <div class="flex flex-col items-end space-y-2">
+              <button 
+                onclick="viewStudentGrades(${student.id}, '${student.name}')" 
+                class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                data-i18n="view_grades">
+                View Grades
+              </button>
+              <button 
+                onclick="openAddGradeModal(${student.id}, '${student.name}')" 
+                class="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300"
+                data-i18n="add_grade">
+                Add Grade
+              </button>
+            </div>
+          </td>
+        `;
+        
+        studentsTbody.appendChild(row);
+      });
+
+      studentsList.classList.remove('hidden');
+
+    } catch (err) {
+      console.error('Error loading students:', err);
+      studentsLoading.classList.add('hidden');
+      studentsEmpty.classList.remove('hidden');
+    }
+  }
+
+  async function viewStudentGrades(studentId, studentName) {
+    currentStudentId = studentId;
+    const modal = document.getElementById('grades-modal');
+    const modalTitle = document.getElementById('grades-modal-title');
+    const gradesContent = document.getElementById('grades-content');
+    
+    modalTitle.textContent = `Grades - ${studentName}`;
+    gradesContent.innerHTML = '<div class="text-center py-4"><svg class="animate-spin h-6 w-6 mx-auto text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>';
+    modal.classList.remove('hidden');
+    
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const response = await fetch(`/api/teacher/courses/${courseId}/student/${studentId}/grades`, {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to load grades');
+      }
+      
+      const data = await response.json();
+      const grades = data.grades || [];
+      
+      if (grades.length === 0) {
+        gradesContent.innerHTML = '<p class="text-center py-8 text-gray-500 dark:text-gray-400" data-i18n="no_grades">No grades recorded yet</p>';
+      } else {
+        let gradesHtml = '<div class="space-y-3">';
+        grades.forEach((grade, index) => {
+          // Handle both field name formats (assignment/name and score/mark)
+          const gradeName = grade.assignment || grade.name || 'Unnamed';
+          const gradeScore = grade.score !== undefined ? grade.score : (grade.mark !== undefined ? grade.mark : 'N/A');
+          const date = grade.created_at ? new Date(grade.created_at).toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          }) : '';
+          
+          gradesHtml += `
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-900 dark:text-gray-100">${gradeName}</h4>
+                  ${date ? `<p class="text-sm text-gray-500 dark:text-gray-400">${date}</p>` : ''}
+                </div>
+                <div class="flex items-center space-x-6">
+                  <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${gradeScore}</div>
+                  <div class="flex space-x-3">
+                    <button 
+                      onclick="editGrade(${index}, '${gradeName.replace(/'/g, "\\'")}', ${gradeScore})" 
+                      class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                      title="Edit">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                    </button>
+                    <button 
+                      onclick="deleteGrade(${index}, '${gradeName.replace(/'/g, "\\'")}', '${studentName}')" 
+                      class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+                      title="Delete">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        gradesHtml += '</div>';
+        gradesContent.innerHTML = gradesHtml;
+      }
+    } catch (err) {
+      console.error('Error loading grades:', err);
+      gradesContent.innerHTML = '<p class="text-center py-8 text-red-600 dark:text-red-400">Failed to load grades</p>';
+    }
+  }
+
+  function closeGradesModal() {
+    document.getElementById('grades-modal').classList.add('hidden');
+    currentStudentId = null;
+  }
+
+  function editGrade(gradeIndex, gradeName, gradeScore) {
+    document.getElementById('edit-grade-index').value = gradeIndex;
+    document.getElementById('edit-grade-name').value = gradeName;
+    document.getElementById('edit-grade-mark').value = gradeScore;
+    document.getElementById('edit-grade-modal').classList.remove('hidden');
+  }
+
+  function closeEditGradeModal() {
+    document.getElementById('edit-grade-modal').classList.add('hidden');
+  }
+
+  async function deleteGrade(gradeIndex, gradeName, studentName) {
+    if (!confirm(`Are you sure you want to delete "${gradeName}"?`)) {
+      return;
+    }
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const response = await fetch(`/api/teacher/courses/${courseId}/student/${currentStudentId}/grade/${gradeIndex}`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete grade');
+      }
+
+      alert('Grade deleted successfully!');
+      // Reload grades
+      viewStudentGrades(currentStudentId, studentName);
+    } catch (err) {
+      console.error('Error deleting grade:', err);
+      alert('Failed to delete grade. Please try again.');
+    }
+  }
+
+  function openAddGradeModal(studentId, studentName) {
+    currentStudentId = studentId;
+    document.getElementById('add-grade-modal').classList.remove('hidden');
+    document.getElementById('add-grade-form').reset();
+  }
+
+  function closeAddGradeModal() {
+    document.getElementById('add-grade-modal').classList.add('hidden');
+    currentStudentId = null;
+  }
+
+  document.getElementById('edit-grade-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const gradeIndex = document.getElementById('edit-grade-index').value;
+    const name = document.getElementById('edit-grade-name').value;
+    const mark = parseInt(document.getElementById('edit-grade-mark').value);
+    
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const response = await fetch(`/api/teacher/courses/${courseId}/student/${currentStudentId}/grade/${gradeIndex}`, {
+        method: 'PUT',
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ name, mark })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update grade');
+      }
+      
+      closeEditGradeModal();
+      alert('Grade updated successfully!');
+      
+      // Find student name from the table to reload grades
+      const row = document.querySelector(`button[onclick*="viewStudentGrades(${currentStudentId}"]`);
+      const studentName = row ? row.closest('tr').querySelector('.font-medium').textContent : 'Student';
+      viewStudentGrades(currentStudentId, studentName);
+    } catch (err) {
+      console.error('Error updating grade:', err);
+      alert('Failed to update grade. Please try again.');
+    }
+  });
+
+  document.getElementById('add-grade-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('grade-name').value;
+    const mark = parseInt(document.getElementById('grade-mark').value);
+    
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const response = await fetch(`/api/teacher/courses/${courseId}/student/${currentStudentId}/mark`, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ name, mark })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to add grade');
+      }
+      
+      closeAddGradeModal();
+      alert('Grade added successfully!');
+    } catch (err) {
+      console.error('Error adding grade:', err);
+      alert('Failed to add grade. Please try again.');
+    }
+  });
+
+  // Load course on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadCourseDetails);
+  } else {
+    loadCourseDetails();
+  }
+
+  // Also load on Turbo navigation
+  document.addEventListener('turbo:load', loadCourseDetails);
+</script>

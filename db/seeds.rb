@@ -1,10 +1,17 @@
-StudentCourse.destroy_all
-CourseTeacher.destroy_all
-Course.destroy_all
-StudentProfile.destroy_all
-User.destroy_all
-Schedule.destroy_all
-Group.destroy_all
+# Disable foreign key checks for SQLite
+ActiveRecord::Base.connection.execute("PRAGMA foreign_keys = OFF")
+
+# Clear all data
+ActiveRecord::Base.connection.execute("DELETE FROM schedules")
+ActiveRecord::Base.connection.execute("DELETE FROM student_courses")
+ActiveRecord::Base.connection.execute("DELETE FROM course_teachers")
+ActiveRecord::Base.connection.execute("DELETE FROM courses")
+ActiveRecord::Base.connection.execute("DELETE FROM student_profiles")
+ActiveRecord::Base.connection.execute("DELETE FROM users")
+ActiveRecord::Base.connection.execute("DELETE FROM groups")
+
+# Re-enable foreign key checks
+ActiveRecord::Base.connection.execute("PRAGMA foreign_keys = ON")
 
 puts "Creating Groups..."
 groups = []
@@ -87,17 +94,56 @@ end
 
 puts "Creating StudentCourses..."
 students.each do |student|
-  courses.sample(2).each do |course|
+  # Each student enrolls in 5-6 courses
+  num_courses = rand(5..6)
+  selected_courses = courses.sample(num_courses)
+  
+  selected_courses.each_with_index do |course, index|
+    # Generate 3-5 test grades for each student
+    num_tests = rand(3..5)
+    grades = []
+    teacher_id = teachers.sample.id
+
+    num_tests.times do |i|
+      # Create grades with timestamps spread over the past few weeks
+      created_time = Time.now.utc - rand(1..30).days - rand(0..23).hours
+
+      grade = {
+        "name" => "Test #{i + 1}",
+        "mark" => rand(0..20),
+        "added_by" => teacher_id,
+        "created_at" => created_time
+      }
+
+      # Randomly add updated_at for some grades (simulating edits)
+      if rand < 0.3
+        grade["updated_at"] = created_time + rand(1..5).days
+        grade["updated_by"] = teacher_id
+      end
+
+      grades << grade
+    end
+
+    # Ensure first 3-4 courses are "current" (active), remaining can be passed/failed
+    possible_grades = [ 2.0, 3.0, 3.5, 4.0, 4.5, 5.0 ]
+    
+    if index < 3 || (index == 3 && rand < 0.5)
+      # This course is current (no final grade yet)
+      final_grade = nil
+      status = "current"
+    else
+      # This course is completed (passed or failed)
+      final_grade = possible_grades.sample
+      status = final_grade == 2.0 ? "failed" : "passed"
+    end
+
     StudentCourse.create!(
       student: student,
       course: course,
       teacher: teachers.sample,
-      grades: [
-        { assignment: "Midterm", score: rand(50..100) },
-        { assignment: "Final", score: rand(50..100) }
-      ],
-      final_grade: rand(50..100),
-      status: [ "current", "passed", "failed" ].sample,  # fixed allowed values
+      grades: grades,
+      final_grade: final_grade,
+      status: status,
       retaken: [ true, false ].sample,
       group_code: student.group.name
     )

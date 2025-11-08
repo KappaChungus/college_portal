@@ -56,13 +56,13 @@
     <div id="groups-error" class="hidden text-red-600 dark:text-red-400"></div>
   </div>
 
-  <!-- Courses Section -->
+  <!-- Current Courses Section -->
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center">
       <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
       </svg>
-      <span data-i18n="my_courses">My Courses</span>
+      <span data-i18n="current_courses">Current Courses</span>
     </h2>
     <div id="courses-loading" class="flex items-center text-gray-500 dark:text-gray-400">
       <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -79,8 +79,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="code">Code</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="course_title">Course Title</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="teacher">Teacher</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="status">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="final_grade">Final Grade</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="actions">Actions</th>
             </tr>
           </thead>
           <tbody id="courses-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -89,6 +88,83 @@
       </div>
     </div>
     <div id="courses-error" class="hidden text-red-600 dark:text-red-400"></div>
+  </div>
+
+  <!-- Toggle Buttons for Completed Courses -->
+  <div class="flex gap-4 mb-6">
+    <button id="toggle-passed" onclick="togglePassedCourses()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+      <span data-i18n="show_passed_courses">Show Passed Courses</span>
+    </button>
+    <button id="toggle-failed" onclick="toggleFailedCourses()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+      <span data-i18n="show_failed_courses">Show Failed Courses</span>
+    </button>
+  </div>
+
+  <!-- Passed Courses Section -->
+  <div id="passed-courses-section" class="hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-semibold text-green-600 dark:text-green-400 mb-4 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span data-i18n="passed_courses">Passed Courses</span>
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="code">Code</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="course_title">Course Title</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="teacher">Teacher</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="final_grade">Final Grade</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="passed-courses-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Failed Courses Section -->
+  <div id="failed-courses-section" class="hidden bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-semibold text-red-600 dark:text-red-400 mb-4 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span data-i18n="failed_courses">Failed Courses</span>
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="code">Code</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="course_title">Course Title</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="teacher">Teacher</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="final_grade">Final Grade</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" data-i18n="actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="failed-courses-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Grades Modal -->
+  <div id="grades-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100" data-i18n="course_grades">Course Grades</h3>
+          <button onclick="closeGradesModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="grades-modal-content"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -191,36 +267,119 @@ async function loadStudentData() {
     
     if (coursesResponse.ok) {
       const courses = await coursesResponse.json();
+      window.allCourses = courses; // Store for toggle functions
+      
       document.getElementById('courses-loading').classList.add('hidden');
       document.getElementById('courses-content').classList.remove('hidden');
       
+      // Filter courses by status
+      const currentCourses = courses.filter(c => c.status === 'current');
+      const passedCourses = courses.filter(c => c.status === 'passed');
+      const failedCourses = courses.filter(c => c.status === 'failed');
+      
+      // Render current courses
       const tbody = document.getElementById('courses-table-body');
-      tbody.innerHTML = ''; // Clear existing content
-      if (courses.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">${window.t ? window.t('no_courses') : 'No courses enrolled'}</td></tr>`;
+      tbody.innerHTML = '';
+      if (currentCourses.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">${window.i18n ? window.i18n.t('no_courses') : 'No current courses'}</td></tr>`;
       } else {
-        courses.forEach(course => {
+        currentCourses.forEach(course => {
           const row = document.createElement('tr');
           row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
-          
-          const statusClass = {
-            'current': 'bg-blue-100 text-blue-800',
-            'passed': 'bg-green-100 text-green-800',
-            'failed': 'bg-red-100 text-red-800'
-          }[course.status] || 'bg-gray-100 text-gray-800';
           
           row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">${course.course?.code || 'N/A'}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${course.course?.title || 'N/A'}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${course.teacher?.name || 'N/A'}</td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
-                ${course.status}
-              </span>
+              <button onclick="viewCourseGrades(${course.course?.id})" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">
+                ${window.i18n ? window.i18n.t('view_grades') : 'View Grades'}
+              </button>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${course.final_grade || '-'}</td>
           `;
           tbody.appendChild(row);
+        });
+      }
+      
+      // Render passed courses
+      const passedSection = document.getElementById('passed-courses-section');
+      const passedTbody = document.getElementById('passed-courses-body');
+      const passedTable = passedSection.querySelector('.overflow-x-auto');
+      
+      passedTbody.innerHTML = '';
+      if (passedCourses.length === 0) {
+        // Hide table, show message
+        passedTable.classList.add('hidden');
+        const message = document.createElement('p');
+        message.className = 'text-gray-500 dark:text-gray-400 text-sm';
+        message.textContent = window.i18n ? window.i18n.t('no_courses') : 'No passed courses';
+        message.id = 'passed-no-courses-msg';
+        if (!passedSection.querySelector('#passed-no-courses-msg')) {
+          passedSection.appendChild(message);
+        }
+      } else {
+        // Show table, remove message
+        passedTable.classList.remove('hidden');
+        const msg = passedSection.querySelector('#passed-no-courses-msg');
+        if (msg) msg.remove();
+        
+        passedCourses.forEach(course => {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+          
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">${course.course?.code || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${course.course?.title || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${course.teacher?.name || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600 dark:text-green-400">${course.final_grade || '-'}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button onclick="viewCourseGrades(${course.course?.id})" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">
+                ${window.i18n ? window.i18n.t('view_grades') : 'View Grades'}
+              </button>
+            </td>
+          `;
+          passedTbody.appendChild(row);
+        });
+      }
+      
+      // Render failed courses
+      const failedSection = document.getElementById('failed-courses-section');
+      const failedTbody = document.getElementById('failed-courses-body');
+      const failedTable = failedSection.querySelector('.overflow-x-auto');
+      
+      failedTbody.innerHTML = '';
+      if (failedCourses.length === 0) {
+        // Hide table, show message
+        failedTable.classList.add('hidden');
+        const message = document.createElement('p');
+        message.className = 'text-gray-500 dark:text-gray-400 text-sm';
+        message.textContent = window.i18n ? window.i18n.t('no_courses') : 'No failed courses';
+        message.id = 'failed-no-courses-msg';
+        if (!failedSection.querySelector('#failed-no-courses-msg')) {
+          failedSection.appendChild(message);
+        }
+      } else {
+        // Show table, remove message
+        failedTable.classList.remove('hidden');
+        const msg = failedSection.querySelector('#failed-no-courses-msg');
+        if (msg) msg.remove();
+        
+        failedCourses.forEach(course => {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+          
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">${course.course?.code || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${course.course?.title || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${course.teacher?.name || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-red-600 dark:text-red-400">${course.final_grade || '-'}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button onclick="viewCourseGrades(${course.course?.id})" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">
+                ${window.i18n ? window.i18n.t('view_grades') : 'View Grades'}
+              </button>
+            </td>
+          `;
+          failedTbody.appendChild(row);
         });
       }
     } else {
@@ -234,6 +393,115 @@ async function loadStudentData() {
     document.getElementById('courses-error').classList.remove('hidden');
     document.getElementById('courses-error').textContent = window.t ? window.t('load_error') : 'Error loading courses';
   }
+}
+
+// Toggle functions for passed/failed courses
+function togglePassedCourses() {
+  const section = document.getElementById('passed-courses-section');
+  const button = document.getElementById('toggle-passed');
+  if (section.classList.contains('hidden')) {
+    section.classList.remove('hidden');
+    button.innerHTML = `<span data-i18n="hide_passed_courses">${window.i18n ? window.i18n.t('hide_passed_courses') : 'Hide Passed Courses'}</span>`;
+  } else {
+    section.classList.add('hidden');
+    button.innerHTML = `<span data-i18n="show_passed_courses">${window.i18n ? window.i18n.t('show_passed_courses') : 'Show Passed Courses'}</span>`;
+  }
+}
+
+function toggleFailedCourses() {
+  const section = document.getElementById('failed-courses-section');
+  const button = document.getElementById('toggle-failed');
+  if (section.classList.contains('hidden')) {
+    section.classList.remove('hidden');
+    button.innerHTML = `<span data-i18n="hide_failed_courses">${window.i18n ? window.i18n.t('hide_failed_courses') : 'Hide Failed Courses'}</span>`;
+  } else {
+    section.classList.add('hidden');
+    button.innerHTML = `<span data-i18n="show_failed_courses">${window.i18n ? window.i18n.t('show_failed_courses') : 'Show Failed Courses'}</span>`;
+  }
+}
+
+// View grades for a specific course
+async function viewCourseGrades(courseId) {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+  const modal = document.getElementById('grades-modal');
+  const content = document.getElementById('grades-modal-content');
+  
+  // Show modal with loading state
+  modal.classList.remove('hidden');
+  content.innerHTML = `
+    <div class="flex items-center text-gray-500 dark:text-gray-400">
+      <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      ${window.t ? window.t('loading') : 'Loading...'}
+    </div>
+  `;
+  
+  try {
+    const response = await fetch(`/api/student/courses/${courseId}/grades`, {
+      headers: {
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
+      },
+      credentials: 'same-origin'
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Render grades
+      let html = `
+        <div class="mb-4">
+          <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">${data.course.code} - ${data.course.title}</h4>
+          <div class="text-sm text-gray-600 dark:text-gray-400">
+            <span data-i18n="status">Status</span>: <span class="font-medium">${data.status}</span>
+          </div>
+          ${data.final_grade ? `<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <span data-i18n="final_grade">Final Grade</span>: <span class="font-semibold text-lg text-green-600 dark:text-green-400">${data.final_grade}</span>
+          </div>` : ''}
+        </div>
+        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-3">${window.t ? window.t('test_grades') : 'Test Grades'}</h5>
+      `;
+      
+      if (data.grades && data.grades.length > 0) {
+        html += '<div class="space-y-3">';
+        data.grades.forEach(grade => {
+          const name = grade.name || grade.assignment || 'Test';
+          const mark = grade.mark !== undefined ? grade.mark : (grade.score !== undefined ? grade.score : 'N/A');
+          const date = grade.created_at ? new Date(grade.created_at).toLocaleDateString() : '';
+          
+          html += `
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="font-medium text-gray-900 dark:text-gray-100">${name}</div>
+                  ${date ? `<div class="text-xs text-gray-500 dark:text-gray-400">${date}</div>` : ''}
+                </div>
+                <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">${mark} / 20</div>
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+      } else {
+        html += `<p class="text-gray-500 dark:text-gray-400 text-sm">${window.t ? window.t('no_grades') : 'No grades yet'}</p>`;
+      }
+      
+      html += '</div>';
+      content.innerHTML = html;
+    } else {
+      content.innerHTML = `<p class="text-red-600 dark:text-red-400">${window.t ? window.t('load_error') : 'Failed to load grades'}</p>`;
+    }
+  } catch (error) {
+    console.error('Grades error:', error);
+    content.innerHTML = `<p class="text-red-600 dark:text-red-400">${window.t ? window.t('load_error') : 'Error loading grades'}</p>`;
+  }
+}
+
+function closeGradesModal() {
+  document.getElementById('grades-modal').classList.add('hidden');
 }
 
 // Load data when DOM is ready

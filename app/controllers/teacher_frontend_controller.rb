@@ -6,6 +6,21 @@ class TeacherFrontendController < ApplicationController
   def index
   end
 
+  def dashboard
+  end
+
+  def schedule
+  end
+
+  def surveys
+  end
+
+  def manage_courses
+  end
+
+  def course
+  end
+
   private
 
   def require_teacher
