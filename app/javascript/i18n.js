@@ -53,6 +53,14 @@ class I18n {
         course_grades: 'Course Grades',
         test_grades: 'Test Grades',
         
+        // Dashboard
+        announcements: 'Announcements',
+        latest_grades: 'Latest Grades',
+        no_announcements: 'No announcements available',
+        by: 'By',
+        previous: 'Previous',
+        next: 'Next',
+        
         // Petitions page
         my_petitions: 'My Petitions',
         new_petition: 'New Petition',
@@ -179,6 +187,14 @@ class I18n {
         hide_failed_courses: 'Ukryj niezaliczone kursy',
         course_grades: 'Oceny z kursu',
         test_grades: 'Oceny z testów',
+        
+        // Dashboard
+        announcements: 'Ogłoszenia',
+        latest_grades: 'Ostatnie oceny',
+        no_announcements: 'Brak ogłoszeń',
+        by: 'Przez',
+        previous: 'Poprzednia',
+        next: 'Następna',
         
         // Petitions page
         my_petitions: 'Moje podania',

@@ -1,10 +1,10 @@
-teacher:
+teacher_one:
   name: Alice
   email: teacher@example.com
   encrypted_password: <%= Devise::Encryptor.digest(User, "password") %>
   type: "Teacher"
 
-student:
+student_one:
   name: Bob
   email: student@example.com
   encrypted_password: <%= Devise::Encryptor.digest(User, "password") %>

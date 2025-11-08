@@ -49,6 +49,10 @@ Rails.application.routes.draw do
 
       get "schedule", to: "schedules#index"
       get "topics", to: "petitions_api#topics"
+
+      # Dashboard
+      get "announcements", to: "dashboard#announcements"
+      get "latest_grades", to: "dashboard#latest_grades"
     end
 
     namespace :teacher do
@@ -65,6 +69,12 @@ Rails.application.routes.draw do
           delete "student/:student_id/grade/:grade_index", to: "manage_courses#delete_grade"
         end
       end
+
+      # Dashboard
+      get "announcements", to: "dashboard#announcements"
+      post "announcements", to: "dashboard#create_announcement"
+      put "announcements/:id", to: "dashboard#update_announcement"
+      delete "announcements/:id", to: "dashboard#delete_announcement"
     end
 
     # Schedule (was class_sessions)

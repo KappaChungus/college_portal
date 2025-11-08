@@ -2,6 +2,7 @@
 ActiveRecord::Base.connection.execute("PRAGMA foreign_keys = OFF")
 
 # Clear all data
+ActiveRecord::Base.connection.execute("DELETE FROM announcements")
 ActiveRecord::Base.connection.execute("DELETE FROM schedules")
 ActiveRecord::Base.connection.execute("DELETE FROM student_courses")
 ActiveRecord::Base.connection.execute("DELETE FROM course_teachers")
@@ -97,7 +98,7 @@ students.each do |student|
   # Each student enrolls in 5-6 courses
   num_courses = rand(5..6)
   selected_courses = courses.sample(num_courses)
-  
+
   selected_courses.each_with_index do |course, index|
     # Generate 3-5 test grades for each student
     num_tests = rand(3..5)
@@ -126,7 +127,7 @@ students.each do |student|
 
     # Ensure first 3-4 courses are "current" (active), remaining can be passed/failed
     possible_grades = [ 2.0, 3.0, 3.5, 4.0, 4.5, 5.0 ]
-    
+
     if index < 3 || (index == 3 && rand < 0.5)
       # This course is current (no final grade yet)
       final_grade = nil
@@ -191,3 +192,48 @@ Group.find_each do |group|
 end
 
 puts "Seeding schedules completed!"
+
+puts "Seeding announcements..."
+# Create some announcements from teachers
+announcement_titles = [
+  "Exam Schedule Update",
+  "Office Hours Changed",
+  "Important: Project Deadline",
+  "Guest Lecture Next Week",
+  "Lab Session Cancelled",
+  "New Study Materials Available",
+  "Midterm Results Posted",
+  "Assignment Submission Guidelines",
+  "Course Material Update",
+  "Final Exam Information"
+]
+
+announcement_contents = [
+  "The exam schedule has been updated. Please check the schedule page for the latest information.",
+  "My office hours for this week have been moved to Thursday 2-4 PM. Please plan accordingly.",
+  "Reminder: The project deadline is approaching. Make sure to submit your work on time.",
+  "We will have a guest lecturer next week discussing industry trends. Attendance is mandatory.",
+  "Due to technical issues, today's lab session has been cancelled. We will reschedule soon.",
+  "New study materials for the upcoming exam are now available on the course page.",
+  "Midterm results have been posted. Please review your grades and contact me if you have questions.",
+  "Please follow the submission guidelines carefully. Late submissions will not be accepted.",
+  "Updated course materials are now available. Please download the latest version.",
+  "Final exam details have been posted. The exam will cover all topics discussed this semester."
+]
+
+teachers.each do |teacher|
+  # Each teacher creates 3-5 announcements
+  rand(3..5).times do
+    date_offset = rand(1..30).days
+    announcement_date = Date.today - date_offset
+
+    Announcement.create!(
+      teacher: teacher,
+      date: announcement_date,
+      title: announcement_titles.sample,
+      content: announcement_contents.sample
+    )
+  end
+end
+
+puts "Seeding announcements completed!"
