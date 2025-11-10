@@ -37,3 +37,7 @@ rails server
 ```
 
 Access at `http://localhost:3000`
+
+
+## 🎬 Demo
+https://github.com/KappaChungus/college_portal/blob/main/demo.mp4
