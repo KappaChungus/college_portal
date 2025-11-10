@@ -1,24 +1,39 @@
-# README
+# College Portal
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A college management system with separate portals for students and teachers.
 
-Things you may want to cover:
+## Technology Stack
 
-* Ruby version
+- **Backend**: Ruby on Rails 8.1.0, Ruby 3.4.7
+- **Frontend**: Tailwind CSS, Turbo (Hotwire), ES6 Modules
+- **Database**: SQLite3 (development), PostgreSQL (production)
+- **Authentication**: Devise
+- **Architecture**: RESTful API structure with JSON endpoints
+- **Internationalization**: i18n support (EN, PL)
+- **CI/CD**: GitHub Actions (automated testing on each commit)
 
-* System dependencies
+## Features
 
-* Configuration
+### Student Portal
+- Dashboard with announcements and grades
+- Study progress tracking
+- Weekly schedule
+- Petition submission
+- Teacher evaluation surveys
 
-* Database creation
+### Teacher Portal
+- Announcement management
+- Course and grade management
+- Weekly schedule
+- Survey results viewing
+- Profile and statistics
 
-* Database initialization
+## Setup
 
-* How to run the test suite
+```bash
+bundle install
+rails db:create db:migrate db:seed
+rails server
+```
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Access at `http://localhost:3000`

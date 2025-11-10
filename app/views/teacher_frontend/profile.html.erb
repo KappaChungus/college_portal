@@ -166,13 +166,19 @@ if (document.readyState === 'loading') {
 
 // Handle Turbo navigation
 document.addEventListener('turbo:before-cache', function() {
-  show(document.getElementById('profile-loading'));
-  hide(document.getElementById('profile-content'));
-  hide(document.getElementById('profile-error'));
+  const profileLoading = document.getElementById('profile-loading');
+  const profileContent = document.getElementById('profile-content');
+  const profileError = document.getElementById('profile-error');
+  const statsLoading = document.getElementById('stats-loading');
+  const statsContent = document.getElementById('stats-content');
+  const statsError = document.getElementById('stats-error');
   
-  show(document.getElementById('stats-loading'));
-  hide(document.getElementById('stats-content'));
-  hide(document.getElementById('stats-error'));
+  if (profileLoading) show(profileLoading);
+  if (profileContent) hide(profileContent);
+  if (profileError) hide(profileError);
+  if (statsLoading) show(statsLoading);
+  if (statsContent) hide(statsContent);
+  if (statsError) hide(statsError);
 });
 
 document.addEventListener('turbo:load', loadAll);

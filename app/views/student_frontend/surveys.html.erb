@@ -406,15 +406,23 @@ if (document.readyState === 'loading') {
 
 // Handle Turbo navigation
 document.addEventListener('turbo:before-cache', function() {
-  show(document.getElementById('teachers-loading'));
-  hide(document.getElementById('teachers-container'));
-  hide(document.getElementById('teachers-empty'));
-  hide(document.getElementById('teachers-error'));
+  const teachersLoading = document.getElementById('teachers-loading');
+  const teachersContainer = document.getElementById('teachers-container');
+  const teachersEmpty = document.getElementById('teachers-empty');
+  const teachersError = document.getElementById('teachers-error');
+  const surveysLoading = document.getElementById('surveys-loading');
+  const surveysContainer = document.getElementById('surveys-container');
+  const surveysEmpty = document.getElementById('surveys-empty');
+  const surveysError = document.getElementById('surveys-error');
   
-  show(document.getElementById('surveys-loading'));
-  hide(document.getElementById('surveys-container'));
-  hide(document.getElementById('surveys-empty'));
-  hide(document.getElementById('surveys-error'));
+  if (teachersLoading) show(teachersLoading);
+  if (teachersContainer) hide(teachersContainer);
+  if (teachersEmpty) hide(teachersEmpty);
+  if (teachersError) hide(teachersError);
+  if (surveysLoading) show(surveysLoading);
+  if (surveysContainer) hide(surveysContainer);
+  if (surveysEmpty) hide(surveysEmpty);
+  if (surveysError) hide(surveysError);
 });
 
 document.addEventListener('turbo:load', function() {

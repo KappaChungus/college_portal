@@ -99,13 +99,21 @@ export async function apiPut(url, data) {
 /**
  * Make a DELETE request
  * @param {string} url - API endpoint
- * @returns {Promise<any>} Parsed JSON response
+ * @returns {Promise<any>} Parsed JSON response or null for empty responses
  */
 export async function apiDelete(url) {
   const response = await apiRequest(url, { method: 'DELETE' });
   
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  // Check if response has content before trying to parse JSON
+  const contentType = response.headers.get('content-type');
+  const contentLength = response.headers.get('content-length');
+  
+  if (response.status === 204 || contentLength === '0' || !contentType?.includes('application/json')) {
+    return null;
   }
   
   return response.json();

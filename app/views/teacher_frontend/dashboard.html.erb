@@ -369,9 +369,13 @@ window.addEventListener('languageChanged', loadDashboardData);
 // Reload when navigating back to this page (Turbo)
 document.addEventListener('turbo:before-cache', function() {
   // Reset to loading state before caching to avoid showing stale data
-  document.getElementById('announcements-loading').classList.remove('hidden');
-  document.getElementById('announcements-content').classList.add('hidden');
-  document.getElementById('announcements-error').classList.add('hidden');
+  const loading = document.getElementById('announcements-loading');
+  const content = document.getElementById('announcements-content');
+  const error = document.getElementById('announcements-error');
+  
+  if (loading) show(loading);
+  if (content) hide(content);
+  if (error) hide(error);
 });
 
 document.addEventListener('turbo:load', loadDashboardData);

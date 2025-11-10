@@ -189,14 +189,16 @@ async function loadCourseDetails() {
     const content = document.getElementById('course-content');
     const error = document.getElementById('course-error');
 
+    // Guard: only run on course pages (not schedule, etc.)
+    if (!loading || !content || !error) return;
+
     // Extract course ID from URL
     const pathParts = window.location.pathname.split('/');
     courseId = pathParts[pathParts.length - 1];
 
-    if (!courseId) {
-      error.textContent = 'Invalid course ID';
-      error.classList.remove('hidden');
-      loading.classList.add('hidden');
+    // Validate that we have a numeric course ID
+    if (!courseId || isNaN(courseId) || courseId === 'schedule') {
+      // Not on a valid course page, exit silently
       return;
     }
 

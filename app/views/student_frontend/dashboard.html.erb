@@ -211,12 +211,19 @@ window.addEventListener('languageChanged', loadDashboardData);
 
 // Handle Turbo navigation
 document.addEventListener('turbo:before-cache', function() {
-  show(document.getElementById('announcements-loading'));
-  hide(document.getElementById('announcements-content'));
-  hide(document.getElementById('announcements-error'));
-  show(document.getElementById('grades-loading'));
-  hide(document.getElementById('grades-content'));
-  hide(document.getElementById('grades-error'));
+  const announcementsLoading = document.getElementById('announcements-loading');
+  const announcementsContent = document.getElementById('announcements-content');
+  const announcementsError = document.getElementById('announcements-error');
+  const gradesLoading = document.getElementById('grades-loading');
+  const gradesContent = document.getElementById('grades-content');
+  const gradesError = document.getElementById('grades-error');
+  
+  if (announcementsLoading) show(announcementsLoading);
+  if (announcementsContent) hide(announcementsContent);
+  if (announcementsError) hide(announcementsError);
+  if (gradesLoading) show(gradesLoading);
+  if (gradesContent) hide(gradesContent);
+  if (gradesError) hide(gradesError);
 });
 
 document.addEventListener('turbo:load', loadDashboardData);
