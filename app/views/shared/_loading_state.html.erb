@@ -1,0 +1,32 @@
+<!-- Shared Loading State Component -->
+<% 
+  section_id = local_assigns[:section_id] || 'content'
+  loading_text = local_assigns[:loading_text] || 'Loading...'
+  error_text = local_assigns[:error_text] || 'Failed to load data. Please try again.'
+%>
+
+<!-- Loading State -->
+<div id="<%= section_id %>-loading" class="flex items-center justify-center py-12">
+  <div class="flex flex-col items-center gap-3">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+    <p class="text-gray-600 dark:text-gray-400"><%= loading_text %></p>
+  </div>
+</div>
+
+<!-- Content (hidden by default) -->
+<div id="<%= section_id %>-content" class="hidden">
+  <%= yield if block_given? %>
+</div>
+
+<!-- Error State (hidden by default) -->
+<div id="<%= section_id %>-error" class="hidden text-center py-12">
+  <div class="flex flex-col items-center gap-3">
+    <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <p class="text-gray-600 dark:text-gray-400"><%= error_text %></p>
+    <button onclick="location.reload()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+      Retry
+    </button>
+  </div>
+</div>

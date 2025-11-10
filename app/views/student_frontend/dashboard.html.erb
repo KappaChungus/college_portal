@@ -67,7 +67,15 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { apiGet } from 'utils/api';
+import { hide, show } from 'utils/dom';
+
+window.apiGet = apiGet;
+
+// Make functions globally accessible
+window.changeAnnouncementsPage = changeAnnouncementsPage;
+
 // Pagination state
 let allAnnouncements = [];
 let currentAnnouncementsPage = 0;
@@ -134,66 +142,33 @@ function changeAnnouncementsPage(direction) {
 }
 
 async function loadDashboardData() {
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-  
-  if (!csrfToken) {
-    console.error('CSRF token not found');
-    return;
-  }
-
   // Load Announcements
   try {
-    const announcementsResponse = await fetch('/api/student/announcements', {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
-    
-    if (announcementsResponse.ok) {
-      allAnnouncements = await announcementsResponse.json();
-      currentAnnouncementsPage = 0; // Reset to first page
-      document.getElementById('announcements-loading').classList.add('hidden');
-      document.getElementById('announcements-content').classList.remove('hidden');
-      renderAnnouncements();
-    } else {
-      document.getElementById('announcements-loading').classList.add('hidden');
-      document.getElementById('announcements-error').classList.remove('hidden');
-      document.getElementById('announcements-error').textContent = 
-        window.i18n ? window.i18n.t('load_error') : 'Failed to load announcements';
-    }
+    allAnnouncements = await apiGet('/api/student/announcements');
+    currentAnnouncementsPage = 0;
+    hide(document.getElementById('announcements-loading'));
+    show(document.getElementById('announcements-content'));
+    renderAnnouncements();
   } catch (error) {
     console.error('Announcements error:', error);
-    document.getElementById('announcements-loading').classList.add('hidden');
-    document.getElementById('announcements-error').classList.remove('hidden');
-    document.getElementById('announcements-error').textContent = 
-      window.i18n ? window.i18n.t('load_error') : 'Error loading announcements';
+    hide(document.getElementById('announcements-loading'));
+    show(document.getElementById('announcements-error'));
   }
 
   // Load Latest Grades
   try {
-    const gradesResponse = await fetch('/api/student/latest_grades', {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
+    const grades = await apiGet('/api/student/latest_grades');
+    hide(document.getElementById('grades-loading'));
+    show(document.getElementById('grades-content'));
     
-    if (gradesResponse.ok) {
-      const grades = await gradesResponse.json();
-      document.getElementById('grades-loading').classList.add('hidden');
-      document.getElementById('grades-content').classList.remove('hidden');
-      
-      const container = document.getElementById('grades-content');
-      container.innerHTML = '';
-      
-      if (grades.length === 0) {
-        container.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">' + 
-                              (window.i18n ? window.i18n.t('no_grades') : 'No grades yet') + 
-                              '</p>';
-      } else {
+    const container = document.getElementById('grades-content');
+    container.innerHTML = '';
+    
+    if (grades.length === 0) {
+      container.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">' + 
+                            (window.i18n ? window.i18n.t('no_grades') : 'No grades yet') + 
+                            '</p>';
+    } else {
         grades.forEach(grade => {
           const scoreClass = grade.mark >= 15 ? 'text-green-600 dark:text-green-400' : 
                             grade.mark >= 10 ? 'text-yellow-600 dark:text-yellow-400' : 
@@ -217,18 +192,10 @@ async function loadDashboardData() {
           container.appendChild(card);
         });
       }
-    } else {
-      document.getElementById('grades-loading').classList.add('hidden');
-      document.getElementById('grades-error').classList.remove('hidden');
-      document.getElementById('grades-error').textContent = 
-        window.i18n ? window.i18n.t('load_error') : 'Failed to load grades';
-    }
   } catch (error) {
     console.error('Grades error:', error);
-    document.getElementById('grades-loading').classList.add('hidden');
-    document.getElementById('grades-error').classList.remove('hidden');
-    document.getElementById('grades-error').textContent = 
-      window.i18n ? window.i18n.t('load_error') : 'Error loading grades';
+    hide(document.getElementById('grades-loading'));
+    show(document.getElementById('grades-error'));
   }
 }
 
@@ -244,14 +211,12 @@ window.addEventListener('languageChanged', loadDashboardData);
 
 // Handle Turbo navigation
 document.addEventListener('turbo:before-cache', function() {
-  // Reset to loading state before caching
-  document.getElementById('announcements-loading').classList.remove('hidden');
-  document.getElementById('announcements-content').classList.add('hidden');
-  document.getElementById('announcements-error').classList.add('hidden');
-  
-  document.getElementById('grades-loading').classList.remove('hidden');
-  document.getElementById('grades-content').classList.add('hidden');
-  document.getElementById('grades-error').classList.add('hidden');
+  show(document.getElementById('announcements-loading'));
+  hide(document.getElementById('announcements-content'));
+  hide(document.getElementById('announcements-error'));
+  show(document.getElementById('grades-loading'));
+  hide(document.getElementById('grades-content'));
+  hide(document.getElementById('grades-error'));
 });
 
 document.addEventListener('turbo:load', loadDashboardData);

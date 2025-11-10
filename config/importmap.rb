@@ -8,3 +8,6 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 
 # Pin i18n directly
 pin "i18n", preload: true
+
+# Pin utility modules
+pin_all_from "app/javascript/utils", under: "utils"

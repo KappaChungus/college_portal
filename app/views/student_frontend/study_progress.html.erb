@@ -168,47 +168,34 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { apiGet } from 'utils/api';
+import { setLoadingState } from 'utils/dom';
+
+window.apiGet = apiGet;
+window.setLoadingState = setLoadingState;
+
+// Make functions globally accessible for inline onclick handlers
+window.togglePassedCourses = togglePassedCourses;
+window.toggleFailedCourses = toggleFailedCourses;
+window.viewCourseGrades = viewCourseGrades;
+window.closeGradesModal = closeGradesModal;
+
 // Use both DOMContentLoaded and a slight delay to ensure everything is ready
 async function loadStudentData() {
   console.log('Loading student data...');
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-  
-  if (!csrfToken) {
-    console.error('CSRF token not found');
-    return;
-  }
-  
-  console.log('CSRF token found, fetching data...');
 
   // Fetch Profile
   try {
     console.log('Fetching profile...');
-    const profileResponse = await fetch('/api/student/profile', {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
-    
-    console.log('Profile response status:', profileResponse.status);
-    
-    if (profileResponse.ok) {
-      const profile = await profileResponse.json();
-      console.log('Profile data:', profile);
-      document.getElementById('profile-loading').classList.add('hidden');
-      document.getElementById('profile-content').classList.remove('hidden');
-      document.getElementById('study-name').textContent = profile.study_name || 'N/A';
-      document.getElementById('study-year').textContent = profile.study_year || 'N/A';
-      document.getElementById('semester').textContent = profile.semester || 'N/A';
-      document.getElementById('specialization').textContent = profile.specialization_field || 'N/A';
-    } else {
-      console.error('Profile request failed with status:', profileResponse.status);
-      document.getElementById('profile-loading').classList.add('hidden');
-      document.getElementById('profile-error').classList.remove('hidden');
-      document.getElementById('profile-error').textContent = `${window.t ? window.t('load_error') : 'Failed to load'} (${profileResponse.status})`;
-    }
+    const profile = await apiGet('/api/student/profile');
+    console.log('Profile data:', profile);
+    document.getElementById('profile-loading').classList.add('hidden');
+    document.getElementById('profile-content').classList.remove('hidden');
+    document.getElementById('study-name').textContent = profile.study_name || 'N/A';
+    document.getElementById('study-year').textContent = profile.study_year || 'N/A';
+    document.getElementById('semester').textContent = profile.semester || 'N/A';
+    document.getElementById('specialization').textContent = profile.specialization_field || 'N/A';
   } catch (error) {
     console.error('Profile error:', error);
     document.getElementById('profile-loading').classList.add('hidden');
@@ -218,35 +205,21 @@ async function loadStudentData() {
 
   // Fetch Groups
   try {
-    const groupsResponse = await fetch('/api/student/groups', {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
+    const groups = await apiGet('/api/student/groups');
+    document.getElementById('groups-loading').classList.add('hidden');
+    document.getElementById('groups-content').classList.remove('hidden');
     
-    if (groupsResponse.ok) {
-      const groups = await groupsResponse.json();
-      document.getElementById('groups-loading').classList.add('hidden');
-      document.getElementById('groups-content').classList.remove('hidden');
-      
-      const groupsContainer = document.getElementById('groups-content');
-      groupsContainer.innerHTML = ''; // Clear existing content
-      if (groups.length === 0) {
-        groupsContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">${window.t ? window.t('no_groups') : 'No groups assigned'}</p>`;
-      } else {
-        groups.forEach(group => {
-          const badge = document.createElement('span');
-          badge.className = 'inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200';
-          badge.textContent = group.name;
-          groupsContainer.appendChild(badge);
-        });
-      }
+    const groupsContainer = document.getElementById('groups-content');
+    groupsContainer.innerHTML = '';
+    if (groups.length === 0) {
+      groupsContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">${window.t ? window.t('no_groups') : 'No groups assigned'}</p>`;
     } else {
-      document.getElementById('groups-loading').classList.add('hidden');
-      document.getElementById('groups-error').classList.remove('hidden');
-      document.getElementById('groups-error').textContent = window.t ? window.t('load_error') : 'Failed to load groups';
+      groups.forEach(group => {
+        const badge = document.createElement('span');
+        badge.className = 'inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200';
+        badge.textContent = group.name;
+        groupsContainer.appendChild(badge);
+      });
     }
   } catch (error) {
     console.error('Groups error:', error);
@@ -257,16 +230,7 @@ async function loadStudentData() {
 
   // Fetch Courses
   try {
-    const coursesResponse = await fetch('/api/student/courses', {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
-    
-    if (coursesResponse.ok) {
-      const courses = await coursesResponse.json();
+    const courses = await apiGet('/api/student/courses');
       window.allCourses = courses; // Store for toggle functions
       
       document.getElementById('courses-loading').classList.add('hidden');
@@ -382,11 +346,6 @@ async function loadStudentData() {
           failedTbody.appendChild(row);
         });
       }
-    } else {
-      document.getElementById('courses-loading').classList.add('hidden');
-      document.getElementById('courses-error').classList.remove('hidden');
-      document.getElementById('courses-error').textContent = window.t ? window.t('load_error') : 'Failed to load courses';
-    }
   } catch (error) {
     console.error('Courses error:', error);
     document.getElementById('courses-loading').classList.add('hidden');
@@ -422,11 +381,9 @@ function toggleFailedCourses() {
 
 // View grades for a specific course
 async function viewCourseGrades(courseId) {
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
   const modal = document.getElementById('grades-modal');
   const content = document.getElementById('grades-modal-content');
   
-  // Show modal with loading state
   modal.classList.remove('hidden');
   content.innerHTML = `
     <div class="flex items-center text-gray-500 dark:text-gray-400">
@@ -439,61 +396,48 @@ async function viewCourseGrades(courseId) {
   `;
   
   try {
-    const response = await fetch(`/api/student/courses/${courseId}/grades`, {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
+    const data = await apiGet(`/api/student/courses/${courseId}/grades`);
     
-    if (response.ok) {
-      const data = await response.json();
-      
-      // Render grades
-      let html = `
-        <div class="mb-4">
-          <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">${data.course.code} - ${data.course.title}</h4>
-          <div class="text-sm text-gray-600 dark:text-gray-400">
-            <span data-i18n="status">Status</span>: <span class="font-medium">${data.status}</span>
-          </div>
-          ${data.final_grade ? `<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            <span data-i18n="final_grade">Final Grade</span>: <span class="font-semibold text-lg text-green-600 dark:text-green-400">${data.final_grade}</span>
-          </div>` : ''}
+    let html = `
+      <div class="mb-4">
+        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">${data.course.code} - ${data.course.title}</h4>
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+          <span data-i18n="status">Status</span>: <span class="font-medium">${data.status}</span>
         </div>
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-3">${window.t ? window.t('test_grades') : 'Test Grades'}</h5>
-      `;
-      
-      if (data.grades && data.grades.length > 0) {
-        html += '<div class="space-y-3">';
-        data.grades.forEach(grade => {
-          const name = grade.name || grade.assignment || 'Test';
-          const mark = grade.mark !== undefined ? grade.mark : (grade.score !== undefined ? grade.score : 'N/A');
-          const date = grade.created_at ? new Date(grade.created_at).toLocaleDateString() : '';
-          
-          html += `
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-              <div class="flex justify-between items-center">
-                <div>
-                  <div class="font-medium text-gray-900 dark:text-gray-100">${name}</div>
-                  ${date ? `<div class="text-xs text-gray-500 dark:text-gray-400">${date}</div>` : ''}
-                </div>
-                <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">${mark} / 20</div>
+        ${data.final_grade ? `<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <span data-i18n="final_grade">Final Grade</span>: <span class="font-semibold text-lg text-green-600 dark:text-green-400">${data.final_grade}</span>
+        </div>` : ''}
+      </div>
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <h5 class="font-medium text-gray-900 dark:text-gray-100 mb-3">${window.t ? window.t('test_grades') : 'Test Grades'}</h5>
+    `;
+    
+    if (data.grades && data.grades.length > 0) {
+      html += '<div class="space-y-3">';
+      data.grades.forEach(grade => {
+        const name = grade.name || grade.assignment || 'Test';
+        const mark = grade.mark !== undefined ? grade.mark : (grade.score !== undefined ? grade.score : 'N/A');
+        const date = grade.created_at ? new Date(grade.created_at).toLocaleDateString() : '';
+        
+        html += `
+          <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+            <div class="flex justify-between items-center">
+              <div>
+                <div class="font-medium text-gray-900 dark:text-gray-100">${name}</div>
+                ${date ? `<div class="text-xs text-gray-500 dark:text-gray-400">${date}</div>` : ''}
               </div>
+              <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">${mark} / 20</div>
             </div>
-          `;
-        });
-        html += '</div>';
-      } else {
-        html += `<p class="text-gray-500 dark:text-gray-400 text-sm">${window.t ? window.t('no_grades') : 'No grades yet'}</p>`;
-      }
-      
+          </div>
+        `;
+      });
       html += '</div>';
-      content.innerHTML = html;
     } else {
-      content.innerHTML = `<p class="text-red-600 dark:text-red-400">${window.t ? window.t('load_error') : 'Failed to load grades'}</p>`;
+      html += `<p class="text-gray-500 dark:text-gray-400 text-sm">${window.t ? window.t('no_grades') : 'No grades yet'}</p>`;
     }
+    
+    html += '</div>';
+    content.innerHTML = html;
   } catch (error) {
     console.error('Grades error:', error);
     content.innerHTML = `<p class="text-red-600 dark:text-red-400">${window.t ? window.t('load_error') : 'Error loading grades'}</p>`;

@@ -29,37 +29,25 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { apiGet } from 'utils/api';
+import { hide, show } from 'utils/dom';
+
+window.apiGet = apiGet;
+
 async function loadPetitions() {
   console.log('Loading petitions...');
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-  
-  if (!csrfToken) {
-    console.error('CSRF token not found');
-    return;
-  }
 
   try {
-    const response = await fetch('/api/student/petitions', {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
-    
-    console.log('Petitions response status:', response.status);
-    
-    if (response.ok) {
-      const petitions = await response.json();
+    const petitions = await apiGet('/api/student/petitions');
       console.log('Petitions data:', petitions);
       
-      document.getElementById('petitions-loading').classList.add('hidden');
+      hide(document.getElementById('petitions-loading'));
       
       if (petitions.length === 0) {
-        document.getElementById('petitions-empty').classList.remove('hidden');
+        show(document.getElementById('petitions-empty'));
       } else {
-        document.getElementById('petitions-content').classList.remove('hidden');
+        show(document.getElementById('petitions-content'));
         const container = document.getElementById('petitions-content');
         container.innerHTML = ''; // Clear existing content
         
@@ -103,17 +91,12 @@ async function loadPetitions() {
           container.appendChild(petitionCard);
         });
       }
-    } else {
-      console.error('Petitions request failed with status:', response.status);
-      document.getElementById('petitions-loading').classList.add('hidden');
-      document.getElementById('petitions-error').classList.remove('hidden');
-      document.getElementById('petitions-error').textContent = `Failed to load petitions (${response.status})`;
-    }
   } catch (error) {
     console.error('Petitions error:', error);
-    document.getElementById('petitions-loading').classList.add('hidden');
-    document.getElementById('petitions-error').classList.remove('hidden');
-    document.getElementById('petitions-error').textContent = 'Error loading petitions';
+    const errorElement = document.getElementById('petitions-error');
+    hide(document.getElementById('petitions-loading'));
+    show(errorElement);
+    errorElement.textContent = 'Error loading petitions';
   }
 }
 

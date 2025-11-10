@@ -1,0 +1,47 @@
+<!-- Shared Modal Component -->
+<%
+  modal_id = local_assigns[:modal_id] || 'modal'
+  title = local_assigns[:title] || 'Modal'
+  size = local_assigns[:size] || 'md' # sm, md, lg, xl
+  
+  size_classes = {
+    'sm' => 'max-w-sm',
+    'md' => 'max-w-md',
+    'lg' => 'max-w-lg',
+    'xl' => 'max-w-xl',
+    '2xl' => 'max-w-2xl'
+  }
+  
+  width_class = size_classes[size] || 'max-w-md'
+%>
+
+<div id="<%= modal_id %>" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full <%= width_class %> max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+        <%= title %>
+      </h3>
+      <button onclick="closeModal('<%= modal_id %>')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6">
+      <%= yield if block_given? %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function closeModal(modalId) {
+    document.getElementById(modalId)?.classList.add('hidden');
+  }
+
+  function openModal(modalId) {
+    document.getElementById(modalId)?.classList.remove('hidden');
+  }
+</script>

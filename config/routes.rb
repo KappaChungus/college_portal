@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users, skip: [ :registrations ]
+  devise_for :users, skip: [ :registrations, :passwords ]
 
   # front for teachers
 

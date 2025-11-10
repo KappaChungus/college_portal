@@ -72,7 +72,13 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { apiGet, apiPost } from 'utils/api';
+import { hide, show } from 'utils/dom';
+
+window.apiGet = apiGet;
+window.apiPost = apiPost;
+
 // Load topics on page load
 async function loadTopics() {
   const topicsLoading = document.getElementById('topics-loading');
@@ -80,34 +86,17 @@ async function loadTopics() {
   const topicSelect = document.getElementById('topic');
   
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const topics = await apiGet('/api/student/topics');
     
-    const response = await fetch('/api/student/topics', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      credentials: 'same-origin'
+    topics.forEach(topic => {
+      const option = document.createElement('option');
+      option.value = topic;
+      option.textContent = topic;
+      topicSelect.appendChild(option);
     });
     
-    if (response.ok) {
-      const topics = await response.json();
-      
-      // Populate select dropdown
-      topics.forEach(topic => {
-        const option = document.createElement('option');
-        option.value = topic;
-        option.textContent = topic;
-        topicSelect.appendChild(option);
-      });
-      
-      // Hide loading, show form
-      topicsLoading.classList.add('hidden');
-      petitionForm.classList.remove('hidden');
-    } else {
-      throw new Error('Failed to load topics');
-    }
+    hide(topicsLoading);
+    show(petitionForm);
   } catch (error) {
     console.error('Error loading topics:', error);
     topicsLoading.innerHTML = '<div class="text-red-600 text-center">Failed to load topics. Please refresh the page.</div>';
@@ -128,11 +117,9 @@ document.getElementById('petition-form').addEventListener('submit', async (e) =>
   const errorMessage = document.getElementById('error-message');
   const successMessage = document.getElementById('success-message');
   
-  // Hide previous messages
-  errorMessage.classList.add('hidden');
-  successMessage.classList.add('hidden');
+  hide(errorMessage);
+  hide(successMessage);
   
-  // Disable submit button
   submitButton.disabled = true;
   submitButton.textContent = window.t ? window.t('submitting') : 'Submitting...';
   
@@ -141,52 +128,27 @@ document.getElementById('petition-form').addEventListener('submit', async (e) =>
   
   if (!topic || !petitionContent) {
     errorMessage.textContent = window.t ? window.t('required_fields') : 'Please fill in all required fields';
-    errorMessage.classList.remove('hidden');
+    show(errorMessage);
     submitButton.disabled = false;
     submitButton.textContent = window.t ? window.t('submit_petition') : 'Submit Petition';
     return;
   }
   
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-  
   try {
-    const response = await fetch('/api/student/petitions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin',
-      body: JSON.stringify({
-        petition: {
-          topic: topic,
-          petition_content: petitionContent
-        }
-      })
+    await apiPost('/api/student/petitions', {
+      petition: { topic, petition_content: petitionContent }
     });
     
-    const data = await response.json();
+    show(successMessage);
+    document.getElementById('petition-form').reset();
     
-    if (response.ok) {
-      successMessage.classList.remove('hidden');
-      document.getElementById('petition-form').reset();
-      
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        window.location.href = '<%= petitions_path %>';
-      }, 2000);
-    } else {
-      const errors = data.errors || ['Failed to submit petition'];
-      errorMessage.textContent = Array.isArray(errors) ? errors.join(', ') : errors;
-      errorMessage.classList.remove('hidden');
-      submitButton.disabled = false;
-      submitButton.textContent = window.t ? window.t('submit_petition') : 'Submit Petition';
-    }
+    setTimeout(() => {
+      window.location.href = '<%= petitions_path %>';
+    }, 2000);
   } catch (error) {
     console.error('Error submitting petition:', error);
     errorMessage.textContent = window.t ? window.t('submit_error') : 'An error occurred while submitting your petition. Please try again.';
-    errorMessage.classList.remove('hidden');
+    show(errorMessage);
     submitButton.disabled = false;
     submitButton.textContent = window.t ? window.t('submit_petition') : 'Submit Petition';
   }

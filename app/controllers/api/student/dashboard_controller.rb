@@ -3,7 +3,6 @@ module Api
     class DashboardController < BaseController
       # GET /api/student/announcements
       def announcements
-        # Get all announcements (can be filtered later if needed)
         announcements = Announcement.recent.limit(10)
 
         render json: announcements.as_json(
@@ -16,14 +15,10 @@ module Api
 
       # GET /api/student/latest_grades
       def latest_grades
-        student = current_user.becomes(::Student)
-
-        # Get all student courses with grades
-        student_courses = student.student_courses
+        student_courses = current_student.student_courses
                                  .includes(:course)
                                  .where.not(grades: [])
 
-        # Collect all grades with course info
         all_grades = []
 
         student_courses.each do |sc|
@@ -39,8 +34,6 @@ module Api
             }
           end
         end
-
-        # Sort by created_at and take latest 10
         latest_grades = all_grades.sort_by { |g| g[:created_at] }.reverse.take(5)
 
         render json: latest_grades

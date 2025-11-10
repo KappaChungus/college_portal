@@ -134,7 +134,15 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { apiGet, apiPost, apiPut, apiDelete } from 'utils/api';
+
+// Make functions global for inline onclick handlers
+window.apiGet = apiGet;
+window.apiPost = apiPost;
+window.apiPut = apiPut;
+window.apiDelete = apiDelete;
+
 // Pagination state
 let allAnnouncements = [];
 let currentAnnouncementsPage = 0;
@@ -224,13 +232,6 @@ function changeAnnouncementsPage(direction) {
 }
 
 async function loadDashboardData() {
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-  
-  if (!csrfToken) {
-    console.error('CSRF token not found');
-    return;
-  }
-
   // Show loading state
   document.getElementById('announcements-loading').classList.remove('hidden');
   document.getElementById('announcements-content').classList.add('hidden');
@@ -238,32 +239,25 @@ async function loadDashboardData() {
 
   // Load Announcements
   try {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
     const announcementsResponse = await fetch('/api/teacher/announcements', {
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
+      headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
       credentials: 'same-origin'
     });
     
     if (announcementsResponse.ok) {
       allAnnouncements = await announcementsResponse.json();
-      currentAnnouncementsPage = 0; // Reset to first page
+      currentAnnouncementsPage = 0;
       document.getElementById('announcements-loading').classList.add('hidden');
       document.getElementById('announcements-content').classList.remove('hidden');
       renderAnnouncements();
     } else {
-      document.getElementById('announcements-loading').classList.add('hidden');
-      document.getElementById('announcements-error').classList.remove('hidden');
-      document.getElementById('announcements-error').textContent = 
-        window.i18n ? window.i18n.t('load_error') : 'Failed to load announcements';
+      throw new Error('Failed to load');
     }
   } catch (error) {
     console.error('Announcements error:', error);
     document.getElementById('announcements-loading').classList.add('hidden');
     document.getElementById('announcements-error').classList.remove('hidden');
-    document.getElementById('announcements-error').textContent = 
-      window.i18n ? window.i18n.t('load_error') : 'Error loading announcements';
   }
 }
 
@@ -300,36 +294,16 @@ function editAnnouncement(id) {
 document.getElementById('announcement-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
   const title = document.getElementById('announcement-title').value;
   const content = document.getElementById('announcement-content').value;
-  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
   
   try {
-    const response = await fetch('/api/teacher/announcements', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin',
-      body: JSON.stringify({
-        announcement: {
-          title: title,
-          content: content,
-          date: today
-        }
-      })
+    await apiPost('/api/teacher/announcements', {
+      announcement: { title, content, date: today }
     });
-    
-    if (response.ok) {
-      closeAddAnnouncementModal();
-      loadDashboardData(); // Reload announcements
-    } else {
-      const error = await response.json();
-      alert('Error: ' + (error.errors ? error.errors.join(', ') : 'Failed to create announcement'));
-    }
+    closeAddAnnouncementModal();
+    loadDashboardData();
   } catch (error) {
     console.error('Error creating announcement:', error);
     alert('Error creating announcement');
@@ -340,39 +314,18 @@ document.getElementById('announcement-form').addEventListener('submit', async (e
 document.getElementById('edit-announcement-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
   const id = document.getElementById('edit-announcement-id').value;
   const title = document.getElementById('edit-announcement-title').value;
   const content = document.getElementById('edit-announcement-content').value;
-  // Get the original announcement date to preserve it
   const announcement = allAnnouncements.find(a => a.id === parseInt(id));
   const date = announcement ? announcement.date : new Date().toISOString().split('T')[0];
   
   try {
-    const response = await fetch(`/api/teacher/announcements/${id}`, {
-      method: 'PUT',
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin',
-      body: JSON.stringify({
-        announcement: {
-          title: title,
-          content: content,
-          date: date
-        }
-      })
+    await apiPut(`/api/teacher/announcements/${id}`, {
+      announcement: { title, content, date }
     });
-    
-    if (response.ok) {
-      closeEditAnnouncementModal();
-      loadDashboardData(); // Reload announcements
-    } else {
-      const error = await response.json();
-      alert('Error: ' + (error.errors ? error.errors.join(', ') : 'Failed to update announcement'));
-    }
+    closeEditAnnouncementModal();
+    loadDashboardData();
   } catch (error) {
     console.error('Error updating announcement:', error);
     alert('Error updating announcement');
@@ -385,23 +338,9 @@ async function deleteAnnouncement(id) {
     return;
   }
   
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-  
   try {
-    const response = await fetch(`/api/teacher/announcements/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin'
-    });
-    
-    if (response.ok) {
-      loadDashboardData(); // Reload announcements
-    } else {
-      alert('Error deleting announcement');
-    }
+    await apiDelete(`/api/teacher/announcements/${id}`);
+    loadDashboardData();
   } catch (error) {
     console.error('Error deleting announcement:', error);
     alert('Error deleting announcement');

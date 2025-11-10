@@ -5,9 +5,8 @@ module Api
       # GET /api/student/courses
 
       def courses
-        student_courses = current_user.becomes(::Student)
-                                      .student_courses
-                                      .includes(:course, :teacher)
+        student_courses = current_student.student_courses
+                                         .includes(:course, :teacher)
 
         render json: student_courses.as_json(
           include: {
@@ -20,16 +19,14 @@ module Api
 
       # GET /api/student/profile/groups
       def groups
-        student = current_user.becomes(::Student)
-        groups = student.groups.distinct
+        groups = current_student.groups.distinct
 
         render json: groups.as_json(only: [ :id, :name ])
       end
 
       # GET /api/student/profile
       def profile
-        student = current_user.becomes(::Student)
-        profile = student.student_profile
+        profile = current_student.student_profile
 
         if profile
           render json: profile.as_json(only: [ :id, :study_name, :study_year, :semester, :specialization_field ])
@@ -40,8 +37,7 @@ module Api
 
       # GET /api/student/courses/:course_id/grades
       def grades
-        student = current_user.becomes(::Student)
-        student_course = student.student_courses.find_by(course_id: params[:course_id])
+        student_course = current_student.student_courses.find_by(course_id: params[:course_id])
 
         if student_course
           render json: {

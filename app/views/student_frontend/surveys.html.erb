@@ -145,22 +145,32 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { apiGet, apiPost } from 'utils/api';
+import { hide, show, setText } from 'utils/dom';
+
+window.apiGet = apiGet;
+window.apiPost = apiPost;
+
 // State
 let currentTeacher = null;
 let currentStudentCourseId = null;
 
+// Make functions globally accessible for inline onclick handlers
+window.openSurveyModal = openSurveyModal;
+window.closeSurveyModal = closeSurveyModal;
+
 // Range input handlers
 document.getElementById('quality-of-classes')?.addEventListener('input', (e) => {
-  document.getElementById('quality-value').textContent = e.target.value;
+  setText(document.getElementById('quality-value'), e.target.value);
 });
 
 document.getElementById('ease-of-communication')?.addEventListener('input', (e) => {
-  document.getElementById('communication-value').textContent = e.target.value;
+  setText(document.getElementById('communication-value'), e.target.value);
 });
 
 document.getElementById('fair-conditions')?.addEventListener('input', (e) => {
-  document.getElementById('conditions-value').textContent = e.target.value;
+  setText(document.getElementById('conditions-value'), e.target.value);
 });
 
 // Load teachers to rate
@@ -171,29 +181,16 @@ async function loadTeachers() {
   const error = document.getElementById('teachers-error');
 
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const teachers = await apiGet('/api/student/current_teachers');
     
-    const response = await fetch('/api/student/current_teachers', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      credentials: 'same-origin'
-    });
-
-    if (!response.ok) throw new Error('Failed to load teachers');
-
-    const teachers = await response.json();
-    
-    loading.classList.add('hidden');
+    hide(loading);
 
     if (teachers.length === 0 || teachers.every(t => t.rated)) {
-      empty.classList.remove('hidden');
+      show(empty);
       return;
     }
 
-    container.classList.remove('hidden');
+    show(container);
     container.innerHTML = '';
 
     teachers.forEach(item => {
@@ -242,18 +239,18 @@ async function loadTeachers() {
     });
 
     if (container.children.length === 0) {
-      container.classList.add('hidden');
-      empty.classList.remove('hidden');
+      hide(container);
+      show(empty);
     } else {
-      container.classList.remove('hidden');
-      empty.classList.add('hidden');
+      show(container);
+      hide(empty);
     }
 
   } catch (err) {
     console.error('Error loading teachers:', err);
-    loading.classList.add('hidden');
-    error.textContent = 'Failed to load teachers. Please refresh the page.';
-    error.classList.remove('hidden');
+    hide(loading);
+    setText(error, 'Failed to load teachers. Please refresh the page.');
+    show(error);
   }
 }
 
@@ -265,32 +262,18 @@ async function loadSurveys() {
   const error = document.getElementById('surveys-error');
 
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const surveys = await apiGet('/api/student/surveys');
     
-    const response = await fetch('/api/student/surveys', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      credentials: 'same-origin'
-    });
-
-    if (!response.ok) throw new Error('Failed to load surveys');
-
-    const surveys = await response.json();
-    
-    loading.classList.add('hidden');
+    hide(loading);
 
     if (surveys.length === 0) {
-      container.classList.add('hidden');
-      empty.classList.remove('hidden');
+      hide(container);
+      show(empty);
       return;
     }
 
-    // Hide empty state and show container
-    empty.classList.add('hidden');
-    container.classList.remove('hidden');
+    hide(empty);
+    show(container);
     container.innerHTML = '';
 
     surveys.forEach(survey => {
@@ -345,9 +328,9 @@ async function loadSurveys() {
 
   } catch (err) {
     console.error('Error loading surveys:', err);
-    loading.classList.add('hidden');
-    error.textContent = 'Failed to load surveys. Please refresh the page.';
-    error.classList.remove('hidden');
+    hide(loading);
+    setText(error, 'Failed to load surveys. Please refresh the page.');
+    show(error);
   }
 }
 
@@ -360,17 +343,17 @@ function openSurveyModal(studentCourseId, teacherId, teacherName, subject) {
     <strong>${teacherName}</strong> - ${subject}
   `;
   
-  document.getElementById('survey-modal').classList.remove('hidden');
+  show(document.getElementById('survey-modal'));
 }
 
 // Close survey modal
 function closeSurveyModal() {
-  document.getElementById('survey-modal').classList.add('hidden');
+  hide(document.getElementById('survey-modal'));
   document.getElementById('survey-form').reset();
-  document.getElementById('survey-error').classList.add('hidden');
-  document.getElementById('quality-value').textContent = '3';
-  document.getElementById('communication-value').textContent = '3';
-  document.getElementById('conditions-value').textContent = '3';
+  hide(document.getElementById('survey-error'));
+  setText(document.getElementById('quality-value'), '3');
+  setText(document.getElementById('communication-value'), '3');
+  setText(document.getElementById('conditions-value'), '3');
   currentTeacher = null;
   currentStudentCourseId = null;
 }
@@ -382,9 +365,9 @@ document.getElementById('survey-form')?.addEventListener('submit', async (e) => 
   const submitButton = document.getElementById('survey-submit-button');
   const errorDiv = document.getElementById('survey-error');
   
-  errorDiv.classList.add('hidden');
+  hide(errorDiv);
   submitButton.disabled = true;
-  submitButton.textContent = window.t ? window.t('submitting') : 'Submitting...';
+  setText(submitButton, window.t ? window.t('submitting') : 'Submitting...');
   
   const formData = {
     survey: {
@@ -397,39 +380,16 @@ document.getElementById('survey-form')?.addEventListener('submit', async (e) => 
   };
   
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-    
-    const response = await fetch('/api/student/surveys', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken,
-        'Accept': 'application/json'
-      },
-      credentials: 'same-origin',
-      body: JSON.stringify(formData)
-    });
-    
-    const data = await response.json();
-    
-    if (response.ok) {
-      closeSurveyModal();
-      // Reload both lists
-      loadTeachers();
-      loadSurveys();
-    } else {
-      const errors = data.errors || data.error || ['Failed to submit survey'];
-      errorDiv.textContent = Array.isArray(errors) ? errors.join(', ') : errors;
-      errorDiv.classList.remove('hidden');
-      submitButton.disabled = false;
-      submitButton.textContent = window.t ? window.t('submit_survey') : 'Submit Survey';
-    }
+    await apiPost('/api/student/surveys', formData);
+    closeSurveyModal();
+    loadTeachers();
+    loadSurveys();
   } catch (error) {
     console.error('Error submitting survey:', error);
-    errorDiv.textContent = 'Network error. Please try again.';
-    errorDiv.classList.remove('hidden');
+    setText(errorDiv, 'Network error. Please try again.');
+    show(errorDiv);
     submitButton.disabled = false;
-    submitButton.textContent = window.t ? window.t('submit_survey') : 'Submit Survey';
+    setText(submitButton, window.t ? window.t('submit_survey') : 'Submit Survey');
   }
 });
 
@@ -446,16 +406,15 @@ if (document.readyState === 'loading') {
 
 // Handle Turbo navigation
 document.addEventListener('turbo:before-cache', function() {
-  // Reset to loading state before caching
-  document.getElementById('teachers-loading').classList.remove('hidden');
-  document.getElementById('teachers-container').classList.add('hidden');
-  document.getElementById('teachers-empty').classList.add('hidden');
-  document.getElementById('teachers-error').classList.add('hidden');
+  show(document.getElementById('teachers-loading'));
+  hide(document.getElementById('teachers-container'));
+  hide(document.getElementById('teachers-empty'));
+  hide(document.getElementById('teachers-error'));
   
-  document.getElementById('surveys-loading').classList.remove('hidden');
-  document.getElementById('surveys-container').classList.add('hidden');
-  document.getElementById('surveys-empty').classList.add('hidden');
-  document.getElementById('surveys-error').classList.add('hidden');
+  show(document.getElementById('surveys-loading'));
+  hide(document.getElementById('surveys-container'));
+  hide(document.getElementById('surveys-empty'));
+  hide(document.getElementById('surveys-error'));
 });
 
 document.addEventListener('turbo:load', function() {

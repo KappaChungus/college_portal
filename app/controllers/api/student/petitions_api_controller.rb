@@ -27,14 +27,6 @@ module Api
         petition = Petition.new(student_id: student.id, topic: p_params[:topic], petition_content: p_params[:petition_content])
 
         if petition.save
-            # enqueue notification email to admin/registry
-            begin
-              PetitionMailer.new_petition(petition).deliver_later
-            rescue StandardError => e
-              Rails.logger.error("Failed to enqueue petition email: ")
-              Rails.logger.error(e.message)
-            end
-
           render json: petition.as_json(only: [ :id, :topic, :petition_content, :status, :created_at ]), status: :created
         else
           render json: { errors: petition.errors.full_messages }, status: :unprocessable_entity
