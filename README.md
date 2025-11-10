@@ -40,8 +40,4 @@ Access at `http://localhost:3000`
 
 
 ## 🎬 Demo
-<video src="https://raw.githubusercontent.com/KappaChungus/college_portal/main/demo.mp4" 
-       controls 
-       width="640" 
-       style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-</video>
+[Watch the demo on YouTube](https://www.youtube.com/watch?v=r9XGRzbkw8Y)
