@@ -78,35 +78,30 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { apiGet } from 'utils/api';
+import { hide, show, setText } from 'utils/dom';
+
+window.apiGet = apiGet;
+
 async function loadProfile() {
   const loading = document.getElementById('profile-loading');
   const content = document.getElementById('profile-content');
   const error = document.getElementById('profile-error');
   
+  // Guard against missing elements (e.g., during Turbo navigation)
+  if (!loading || !content || !error) return;
+  
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const profile = await apiGet('/api/teacher/profile');
     
-    const response = await fetch('/api/teacher/profile', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      credentials: 'same-origin'
-    });
-
-    if (!response.ok) throw new Error('Failed to load profile');
-
-    const profile = await response.json();
-    
-    loading.classList.add('hidden');
-    content.classList.remove('hidden');
+    hide(loading);
+    show(content);
 
     // Populate profile data
-    document.getElementById('profile-name').textContent = profile.name || 'N/A';
-    document.getElementById('profile-email').textContent = profile.email || 'N/A';
-    document.getElementById('profile-science-title').textContent = profile.science_title || 'N/A';
+    setText(document.getElementById('profile-name'), profile.name || 'N/A');
+    setText(document.getElementById('profile-email'), profile.email || 'N/A');
+    setText(document.getElementById('profile-science-title'), profile.science_title || 'N/A');
     
     // Populate groups
     const groupsContainer = document.getElementById('profile-groups');
@@ -125,9 +120,9 @@ async function loadProfile() {
 
   } catch (err) {
     console.error('Error loading profile:', err);
-    loading.classList.add('hidden');
-    error.textContent = 'Failed to load profile. Please refresh the page.';
-    error.classList.remove('hidden');
+    hide(loading);
+    setText(error, 'Failed to load profile. Please refresh the page.');
+    show(error);
   }
 }
 
@@ -136,34 +131,24 @@ async function loadStats() {
   const statsContent = document.getElementById('stats-content');
   const statsError = document.getElementById('stats-error');
   
+  // Guard against missing elements (e.g., during Turbo navigation)
+  if (!statsLoading || !statsContent || !statsError) return;
+  
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const stats = await apiGet('/api/teacher/profile/stats');
     
-    const response = await fetch('/api/teacher/profile/stats', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      credentials: 'same-origin'
-    });
-
-    if (!response.ok) throw new Error('Failed to load stats');
-
-    const stats = await response.json();
-    
-    statsLoading.classList.add('hidden');
-    statsContent.classList.remove('hidden');
+    hide(statsLoading);
+    show(statsContent);
 
     // Populate stats
-    document.getElementById('total-courses').textContent = stats.total_courses || 0;
-    document.getElementById('total-students').textContent = stats.total_students || 0;
+    setText(document.getElementById('total-courses'), stats.total_courses || 0);
+    setText(document.getElementById('total-students'), stats.total_students || 0);
 
   } catch (err) {
     console.error('Error loading stats:', err);
-    statsLoading.classList.add('hidden');
-    statsError.textContent = 'Failed to load statistics.';
-    statsError.classList.remove('hidden');
+    hide(statsLoading);
+    setText(statsError, 'Failed to load statistics.');
+    show(statsError);
   }
 }
 
@@ -181,13 +166,13 @@ if (document.readyState === 'loading') {
 
 // Handle Turbo navigation
 document.addEventListener('turbo:before-cache', function() {
-  document.getElementById('profile-loading').classList.remove('hidden');
-  document.getElementById('profile-content').classList.add('hidden');
-  document.getElementById('profile-error').classList.add('hidden');
+  show(document.getElementById('profile-loading'));
+  hide(document.getElementById('profile-content'));
+  hide(document.getElementById('profile-error'));
   
-  document.getElementById('stats-loading').classList.remove('hidden');
-  document.getElementById('stats-content').classList.add('hidden');
-  document.getElementById('stats-error').classList.add('hidden');
+  show(document.getElementById('stats-loading'));
+  hide(document.getElementById('stats-content'));
+  hide(document.getElementById('stats-error'));
 });
 
 document.addEventListener('turbo:load', loadAll);

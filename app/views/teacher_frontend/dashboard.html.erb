@@ -136,12 +136,7 @@
 
 <script type="module">
 import { apiGet, apiPost, apiPut, apiDelete } from 'utils/api';
-
-// Make functions global for inline onclick handlers
-window.apiGet = apiGet;
-window.apiPost = apiPost;
-window.apiPut = apiPut;
-window.apiDelete = apiDelete;
+import { hide, show, setText } from 'utils/dom';
 
 // Pagination state
 let allAnnouncements = [];
@@ -150,13 +145,18 @@ const announcementsPerPage = 3;
 
 function renderAnnouncements() {
   const container = document.getElementById('announcements-list');
+  const pagination = document.getElementById('announcements-pagination');
+  
+  // Guard against missing elements (e.g., during Turbo navigation)
+  if (!container || !pagination) return;
+  
   container.innerHTML = '';
   
   if (allAnnouncements.length === 0) {
     container.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">' + 
                           (window.i18n ? window.i18n.t('no_announcements') : 'No announcements') + 
                           '</p>';
-    document.getElementById('announcements-pagination').classList.add('hidden');
+    hide(pagination);
     return;
   }
   
@@ -209,15 +209,19 @@ function renderAnnouncements() {
   
   // Update pagination controls
   if (totalPages > 1) {
-    document.getElementById('announcements-pagination').classList.remove('hidden');
-    document.getElementById('announcements-page-info').textContent = 
-      `${currentAnnouncementsPage + 1} / ${totalPages}`;
+    show(pagination);
+    const pageInfo = document.getElementById('announcements-page-info');
+    if (pageInfo) {
+      setText(pageInfo, `${currentAnnouncementsPage + 1} / ${totalPages}`);
+    }
     
     // Update button states
-    document.getElementById('prev-announcements').disabled = currentAnnouncementsPage === 0;
-    document.getElementById('next-announcements').disabled = currentAnnouncementsPage >= totalPages - 1;
+    const prevBtn = document.getElementById('prev-announcements');
+    const nextBtn = document.getElementById('next-announcements');
+    if (prevBtn) prevBtn.disabled = currentAnnouncementsPage === 0;
+    if (nextBtn) nextBtn.disabled = currentAnnouncementsPage >= totalPages - 1;
   } else {
-    document.getElementById('announcements-pagination').classList.add('hidden');
+    hide(pagination);
   }
 }
 
@@ -232,54 +236,50 @@ function changeAnnouncementsPage(direction) {
 }
 
 async function loadDashboardData() {
-  // Show loading state
-  document.getElementById('announcements-loading').classList.remove('hidden');
-  document.getElementById('announcements-content').classList.add('hidden');
-  document.getElementById('announcements-error').classList.add('hidden');
+  const loading = document.getElementById('announcements-loading');
+  const content = document.getElementById('announcements-content');
+  const error = document.getElementById('announcements-error');
+  
+  // Guard against missing elements (e.g., during Turbo navigation)
+  if (!loading || !content || !error) return;
+  
+  show(loading);
+  hide(content);
+  hide(error);
 
   // Load Announcements
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-    const announcementsResponse = await fetch('/api/teacher/announcements', {
-      headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
-      credentials: 'same-origin'
-    });
-    
-    if (announcementsResponse.ok) {
-      allAnnouncements = await announcementsResponse.json();
-      currentAnnouncementsPage = 0;
-      document.getElementById('announcements-loading').classList.add('hidden');
-      document.getElementById('announcements-content').classList.remove('hidden');
-      renderAnnouncements();
-    } else {
-      throw new Error('Failed to load');
-    }
+    allAnnouncements = await apiGet('/api/teacher/announcements');
+    currentAnnouncementsPage = 0;
+    hide(loading);
+    show(content);
+    renderAnnouncements();
   } catch (error) {
     console.error('Announcements error:', error);
-    document.getElementById('announcements-loading').classList.add('hidden');
-    document.getElementById('announcements-error').classList.remove('hidden');
+    hide(loading);
+    show(error);
   }
 }
 
 // Modal functions
 function openAddAnnouncementModal() {
-  document.getElementById('add-announcement-modal').classList.remove('hidden');
+  show(document.getElementById('add-announcement-modal'));
 }
 
 function closeAddAnnouncementModal() {
-  document.getElementById('add-announcement-modal').classList.add('hidden');
+  hide(document.getElementById('add-announcement-modal'));
   document.getElementById('announcement-form').reset();
 }
 
 function openEditAnnouncementModal(announcement) {
-  document.getElementById('edit-announcement-modal').classList.remove('hidden');
+  show(document.getElementById('edit-announcement-modal'));
   document.getElementById('edit-announcement-id').value = announcement.id;
   document.getElementById('edit-announcement-title').value = announcement.title;
   document.getElementById('edit-announcement-content').value = announcement.content;
 }
 
 function closeEditAnnouncementModal() {
-  document.getElementById('edit-announcement-modal').classList.add('hidden');
+  hide(document.getElementById('edit-announcement-modal'));
   document.getElementById('edit-announcement-form').reset();
 }
 
@@ -346,6 +346,15 @@ async function deleteAnnouncement(id) {
     alert('Error deleting announcement');
   }
 }
+
+// Expose functions globally for inline onclick handlers
+window.changeAnnouncementsPage = changeAnnouncementsPage;
+window.openAddAnnouncementModal = openAddAnnouncementModal;
+window.closeAddAnnouncementModal = closeAddAnnouncementModal;
+window.openEditAnnouncementModal = openEditAnnouncementModal;
+window.closeEditAnnouncementModal = closeEditAnnouncementModal;
+window.editAnnouncement = editAnnouncement;
+window.deleteAnnouncement = deleteAnnouncement;
 
 // Load data when DOM is ready
 if (document.readyState === 'loading') {

@@ -29,39 +29,29 @@
   <div id="courses-error" class="hidden text-center py-12 text-red-600 dark:text-red-400"></div>
 </div>
 
-<script>
-  async function loadCourses() {
+<script type="module">
+import { apiGet } from 'utils/api';
+import { hide, show, setText } from 'utils/dom';
+
+window.apiGet = apiGet;
+
+async function loadCourses() {
     const loading = document.getElementById('courses-loading');
     const content = document.getElementById('courses-content');
     const empty = document.getElementById('courses-empty');
     const error = document.getElementById('courses-error');
     const grid = document.getElementById('courses-grid');
 
+    // Guard against missing elements (e.g., during Turbo navigation)
+    if (!loading || !content || !empty || !error || !grid) return;
+
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const courses = await apiGet('/api/teacher/courses');
       
-      const response = await fetch('/api/teacher/courses', {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
-
-      loading.classList.add('hidden');
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          empty.classList.remove('hidden');
-          return;
-        }
-        throw new Error('Failed to load courses');
-      }
-
-      const courses = await response.json();
+      hide(loading);
       
       if (!courses || courses.length === 0) {
-        empty.classList.remove('hidden');
+        show(empty);
         return;
       }
 
@@ -99,13 +89,13 @@
         grid.appendChild(courseCard);
       });
 
-      content.classList.remove('hidden');
+      show(content);
 
     } catch (err) {
       console.error('Error loading courses:', err);
-      loading.classList.add('hidden');
-      error.textContent = 'Failed to load courses. Please refresh the page.';
-      error.classList.remove('hidden');
+      hide(loading);
+      setText(error, 'Failed to load courses. Please refresh the page.');
+      show(error);
     }
   }
 

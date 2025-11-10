@@ -163,11 +163,28 @@
   </div>
 </div>
 
-<script>
-  let courseId = null;
-  let currentStudentId = null;
+<script type="module">
+import { apiGet, apiPost, apiPut, apiDelete } from 'utils/api';
+import { hide, show, setText } from 'utils/dom';
 
-  async function loadCourseDetails() {
+window.apiGet = apiGet;
+window.apiPost = apiPost;
+window.apiPut = apiPut;
+window.apiDelete = apiDelete;
+
+// Make functions globally accessible
+window.viewStudentGrades = viewStudentGrades;
+window.closeGradesModal = closeGradesModal;
+window.editGrade = editGrade;
+window.closeEditGradeModal = closeEditGradeModal;
+window.deleteGrade = deleteGrade;
+window.openAddGradeModal = openAddGradeModal;
+window.closeAddGradeModal = closeAddGradeModal;
+
+let courseId = null;
+let currentStudentId = null;
+
+async function loadCourseDetails() {
     const loading = document.getElementById('course-loading');
     const content = document.getElementById('course-content');
     const error = document.getElementById('course-error');
@@ -184,31 +201,9 @@
     }
 
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-      
-      const response = await fetch(`/api/teacher/courses/${courseId}`, {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
+      const course = await apiGet(`/api/teacher/courses/${courseId}`);
 
-      loading.classList.add('hidden');
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          error.textContent = 'Course not found';
-        } else if (response.status === 403) {
-          error.textContent = 'Access denied';
-        } else {
-          error.textContent = 'Failed to load course';
-        }
-        error.classList.remove('hidden');
-        return;
-      }
-
-      const course = await response.json();
+      hide(loading);
       
       // Display course details
       document.getElementById('course-code').textContent = course.code;
@@ -216,16 +211,14 @@
       document.getElementById('course-teacher').textContent = course.teacher?.name || 'N/A';
       document.getElementById('course-group').textContent = course.group?.name || 'N/A';
 
-      content.classList.remove('hidden');
-
-      // Load students
+      show(content);
       loadStudents();
 
     } catch (err) {
       console.error('Error loading course:', err);
-      loading.classList.add('hidden');
-      error.textContent = 'Failed to load course. Please refresh the page.';
-      error.classList.remove('hidden');
+      hide(loading);
+      setText(error, 'Failed to load course. Please refresh the page.');
+      show(error);
     }
   }
 
@@ -236,27 +229,12 @@
     const studentsTbody = document.getElementById('students-tbody');
 
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const students = await apiGet(`/api/teacher/courses/${courseId}/students`);
       
-      const response = await fetch(`/api/teacher/courses/${courseId}/students`, {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
-
-      studentsLoading.classList.add('hidden');
-
-      if (!response.ok) {
-        studentsEmpty.classList.remove('hidden');
-        return;
-      }
-
-      const students = await response.json();
+      hide(studentsLoading);
       
       if (!students || students.length === 0) {
-        studentsEmpty.classList.remove('hidden');
+        show(studentsEmpty);
         return;
       }
 
@@ -295,12 +273,12 @@
         studentsTbody.appendChild(row);
       });
 
-      studentsList.classList.remove('hidden');
+      show(studentsList);
 
     } catch (err) {
       console.error('Error loading students:', err);
-      studentsLoading.classList.add('hidden');
-      studentsEmpty.classList.remove('hidden');
+      hide(studentsLoading);
+      show(studentsEmpty);
     }
   }
 
@@ -310,25 +288,12 @@
     const modalTitle = document.getElementById('grades-modal-title');
     const gradesContent = document.getElementById('grades-content');
     
-    modalTitle.textContent = `Grades - ${studentName}`;
+    setText(modalTitle, `Grades - ${studentName}`);
     gradesContent.innerHTML = '<div class="text-center py-4"><svg class="animate-spin h-6 w-6 mx-auto text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>';
-    modal.classList.remove('hidden');
+    show(modal);
     
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-      const response = await fetch(`/api/teacher/courses/${courseId}/student/${studentId}/grades`, {
-        headers: {
-          'X-CSRF-Token': csrfToken,
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to load grades');
-      }
-      
-      const data = await response.json();
+      const data = await apiGet(`/api/teacher/courses/${courseId}/student/${studentId}/grades`);
       const grades = data.grades || [];
       
       if (grades.length === 0) {
@@ -387,7 +352,7 @@
   }
 
   function closeGradesModal() {
-    document.getElementById('grades-modal').classList.add('hidden');
+    hide(document.getElementById('grades-modal'));
     currentStudentId = null;
   }
 
@@ -395,11 +360,11 @@
     document.getElementById('edit-grade-index').value = gradeIndex;
     document.getElementById('edit-grade-name').value = gradeName;
     document.getElementById('edit-grade-mark').value = gradeScore;
-    document.getElementById('edit-grade-modal').classList.remove('hidden');
+    show(document.getElementById('edit-grade-modal'));
   }
 
   function closeEditGradeModal() {
-    document.getElementById('edit-grade-modal').classList.add('hidden');
+    hide(document.getElementById('edit-grade-modal'));
   }
 
   async function deleteGrade(gradeIndex, gradeName, studentName) {
@@ -408,22 +373,8 @@
     }
 
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-      const response = await fetch(`/api/teacher/courses/${courseId}/student/${currentStudentId}/grade/${gradeIndex}`, {
-        method: 'DELETE',
-        headers: {
-          'X-CSRF-Token': csrfToken,
-          'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete grade');
-      }
-
+      await apiDelete(`/api/teacher/courses/${courseId}/student/${currentStudentId}/grade/${gradeIndex}`);
       alert('Grade deleted successfully!');
-      // Reload grades
       viewStudentGrades(currentStudentId, studentName);
     } catch (err) {
       console.error('Error deleting grade:', err);
@@ -433,12 +384,12 @@
 
   function openAddGradeModal(studentId, studentName) {
     currentStudentId = studentId;
-    document.getElementById('add-grade-modal').classList.remove('hidden');
+    show(document.getElementById('add-grade-modal'));
     document.getElementById('add-grade-form').reset();
   }
 
   function closeAddGradeModal() {
-    document.getElementById('add-grade-modal').classList.add('hidden');
+    hide(document.getElementById('add-grade-modal'));
     currentStudentId = null;
   }
 
@@ -450,21 +401,7 @@
     const mark = parseInt(document.getElementById('edit-grade-mark').value);
     
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-      const response = await fetch(`/api/teacher/courses/${courseId}/student/${currentStudentId}/grade/${gradeIndex}`, {
-        method: 'PUT',
-        headers: {
-          'X-CSRF-Token': csrfToken,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({ name, mark })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update grade');
-      }
+      await apiPut(`/api/teacher/courses/${courseId}/student/${currentStudentId}/grade/${gradeIndex}`, { name, mark });
       
       closeEditGradeModal();
       alert('Grade updated successfully!');
@@ -486,21 +423,7 @@
     const mark = parseInt(document.getElementById('grade-mark').value);
     
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-      const response = await fetch(`/api/teacher/courses/${courseId}/student/${currentStudentId}/mark`, {
-        method: 'POST',
-        headers: {
-          'X-CSRF-Token': csrfToken,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({ name, mark })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to add grade');
-      }
+      await apiPost(`/api/teacher/courses/${courseId}/student/${currentStudentId}/mark`, { name, mark });
       
       closeAddGradeModal();
       alert('Grade added successfully!');

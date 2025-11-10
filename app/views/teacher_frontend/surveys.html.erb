@@ -73,7 +73,10 @@
   <div id="surveys-error" class="hidden text-center py-12 text-red-600 dark:text-red-400"></div>
 </div>
 
-<script>
+<script type="module">
+  import { apiGet } from 'utils/api';
+  import { hide, show, setText } from 'utils/dom';
+
   let surveysData = null; // Store survey data globally for language changes
 
   async function loadSurveys() {
@@ -85,55 +88,32 @@
     const surveysList = document.getElementById('surveys-list');
 
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-      
       // Load averages and surveys
-      const [averagesResponse, surveysResponse] = await Promise.all([
-        fetch('/api/teacher/surveys/averages', {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-            'Accept': 'application/json'
-          },
-          credentials: 'same-origin'
-        }),
-        fetch('/api/teacher/surveys', {
-          headers: {
-            'X-CSRF-Token': csrfToken,
-            'Accept': 'application/json'
-          },
-          credentials: 'same-origin'
-        })
+      const [averagesData, surveysResponse] = await Promise.all([
+        apiGet('/api/teacher/surveys/averages'),
+        apiGet('/api/teacher/surveys')
       ]);
 
-      loading.classList.add('hidden');
+      hide(loading);
 
-      if (!averagesResponse.ok || !surveysResponse.ok) {
-        if (averagesResponse.status === 404 || surveysResponse.status === 404) {
-          empty.classList.remove('hidden');
-          return;
-        }
-        throw new Error('Failed to load surveys');
-      }
-
-      const averagesData = await averagesResponse.json();
-      surveysData = await surveysResponse.json(); // Store globally
+      surveysData = surveysResponse; // Store globally
 
       // Display averages
-      document.getElementById('avg-quality').textContent = averagesData.averages.quality_of_classes_conducted || '-';
-      document.getElementById('avg-communication').textContent = averagesData.averages.ease_of_communication || '-';
-      document.getElementById('avg-fair').textContent = averagesData.averages.fair_and_clear_conditions || '-';
-      document.getElementById('total-surveys').textContent = averagesData.count;
+      setText(document.getElementById('avg-quality'), averagesData.averages.quality_of_classes_conducted || '-');
+      setText(document.getElementById('avg-communication'), averagesData.averages.ease_of_communication || '-');
+      setText(document.getElementById('avg-fair'), averagesData.averages.fair_and_clear_conditions || '-');
+      setText(document.getElementById('total-surveys'), averagesData.count);
 
-      averagesSection.classList.remove('hidden');
+      show(averagesSection);
 
       // Display individual surveys
       renderSurveysList();
 
     } catch (err) {
       console.error('Error loading surveys:', err);
-      loading.classList.add('hidden');
-      error.textContent = 'Failed to load surveys. Please refresh the page.';
-      error.classList.remove('hidden');
+      hide(loading);
+      setText(error, 'Failed to load surveys. Please refresh the page.');
+      show(error);
     }
   }
 
@@ -141,6 +121,9 @@
     const surveysList = document.getElementById('surveys-list');
     const surveysSection = document.getElementById('surveys-section');
     const empty = document.getElementById('surveys-empty');
+
+    // Guard against null elements (e.g., during Turbo navigation)
+    if (!surveysList || !surveysSection || !empty) return;
 
     if (surveysData && surveysData.surveys && surveysData.surveys.length > 0) {
       surveysList.innerHTML = '';
@@ -193,9 +176,9 @@
         surveysList.appendChild(surveyCard);
       });
 
-      surveysSection.classList.remove('hidden');
+      show(surveysSection);
     } else {
-      empty.classList.remove('hidden');
+      show(empty);
     }
   }
 
